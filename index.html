@@ -404,6 +404,28 @@ dialog::backdrop{background:rgba(14,18,30,.5)}
 .ident-field input{width:100%;box-sizing:border-box;font:inherit;padding:11px 12px;border:1px solid var(--rule);border-radius:8px;background:var(--paper);color:var(--ink)}
 .ident-field input:focus-visible{outline:3px solid var(--pen);outline-offset:1px}
 .ident-err{color:var(--bad);margin:12px 0 0;min-height:1.4em;font-size:15px}
+
+/* Abas, treino por módulo, resultados do aluno */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--rule);margin:18px 0 22px}
+.tabs button{font:inherit;font-weight:560;background:none;border:0;border-bottom:3px solid transparent;padding:10px 14px;margin-bottom:-1px;color:var(--ink-2);cursor:pointer}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--pen)}
+.tabs button:focus-visible{outline:3px solid var(--pen);outline-offset:2px}
+.tabs .c{display:inline-block;min-width:1.6em;margin-left:6px;padding:0 6px;border-radius:999px;background:var(--rule);font-size:13px;text-align:center}
+.tabs .c:empty{display:none}
+.mode-card{border:1px solid var(--rule);border-radius:10px;padding:18px 20px 20px;margin:0 0 18px}
+.mode-card h2{margin-top:0}
+.mode-card h3{margin:18px 0 6px;font-size:17px}
+.mode-form{display:flex;flex-wrap:wrap;gap:0 18px}
+.mode-form .ident-field{flex:1 1 220px}
+.ident-field select{width:100%;box-sizing:border-box;font:inherit;padding:10px 12px;border:1px solid var(--rule);border-radius:8px;background:var(--paper);color:var(--ink)}
+.ident-field select:focus-visible{outline:3px solid var(--pen);outline-offset:1px}
+.resume{border:1px solid var(--pen);border-radius:10px;padding:14px 18px;margin:0 0 18px}
+.resume p{margin:0 0 10px}
+.resume .start-actions{margin-top:6px}
+.mine-sum{margin:0 0 14px}
+table.students.mine{min-width:560px}
+table.mine td:first-child{white-space:nowrap}
+.st-type{display:block;font-size:13px;color:var(--ink-3)}
 </style>
 </head>
 <body>
@@ -433,7 +455,7 @@ dialog::backdrop{background:rgba(14,18,30,.5)}
       <div class="start-actions">
         <button id="btn-ident" class="btn primary">Continuar</button>
       </div>
-      <p class="hint">Se você já começou o simulado, use o mesmo e-mail para continuar de onde parou.</p>
+      <p class="hint">Use sempre o mesmo e-mail: é por ele que você continua uma prova e vê os seus resultados.</p>
     </main>
   </div>
 </section>
@@ -443,27 +465,55 @@ dialog::backdrop{background:rgba(14,18,30,.5)}
   <div class="start-wrap">
     <main class="start sheet">
       <h1>Simulado ANCORD</h1>
-      <p class="lede">80 questões sorteadas, uma por vez. Você tem uma única tentativa.</p>
-      <div class="before">
-        <h2>Antes de começar</h2>
-        <p id="start-time-note">O tempo começa a contar quando você clicar em começar e não para se você fechar a página.</p>
-        <p>As respostas são salvas automaticamente: se a página fechar, é só abrir o link de novo, informar o mesmo e-mail e continuar.</p>
-        <p>As questões são sorteadas de um banco de <span id="bank-size"></span> questões, respeitando a quantidade de cada módulo da prova da ANCORD. Cada pessoa recebe uma prova diferente.</p>
-        <p>Depois de enviar, não dá para alterar as respostas nem refazer. O gabarito não é mostrado; a correção vai para quem aplicou o simulado.</p>
-      </div>
-      <h2>Para ser aprovado</h2>
-      <p class="rule-text">Acerte pelo menos <strong>56 questões (70%)</strong> e atinja o mínimo nos quatro módulos com nota de corte. Questões em branco contam como erro.</p>
-      <div class="table-wrap">
-        <table class="mods">
-          <thead><tr><th colspan="2">Módulo</th><th class="num">Questões sorteadas</th><th class="num">Mínimo</th></tr></thead>
-          <tbody id="start-mods"></tbody>
-        </table>
-      </div>
-      <div class="start-actions">
-        <button id="btn-start" class="btn primary">Começar simulado</button>
-      </div>
       <p class="hint" id="who-line"></p>
-      <p class="hint">Atalhos de teclado: <kbd>A</kbd> a <kbd>D</kbd> marcam a alternativa, <kbd>←</kbd> <kbd>→</kbd> trocam de questão, <kbd>M</kbd> marca para revisar.</p>
+      <div class="tabs" role="tablist" aria-label="Simulado">
+        <button type="button" role="tab" id="tab-new" aria-controls="panel-new" aria-selected="true">Fazer prova</button>
+        <button type="button" role="tab" id="tab-mine" aria-controls="panel-mine" aria-selected="false">Meus resultados<span class="c" id="mine-count"></span></button>
+      </div>
+
+      <div id="panel-new" role="tabpanel" aria-labelledby="tab-new">
+        <div id="resume-box" class="resume" hidden></div>
+
+        <section class="mode-card">
+          <h2>Prova completa</h2>
+          <p class="lede">80 questões sorteadas, uma por vez, no formato da prova da ANCORD.</p>
+          <div class="before">
+            <p id="start-time-note">O tempo começa a contar quando você clicar em começar e não para se você fechar a página.</p>
+            <p>As respostas são salvas automaticamente: se a página fechar, é só abrir o link de novo, informar o mesmo e-mail e continuar.</p>
+            <p>As questões são sorteadas de um banco de <span id="bank-size"></span> questões, respeitando a quantidade de cada módulo. Cada prova é diferente, e você pode fazer quantas quiser.</p>
+            <p>Ao enviar, você vê na hora o resultado e a correção, que ficam guardados em <strong>Meus resultados</strong>.</p>
+          </div>
+          <h3>Para ser aprovado</h3>
+          <p class="rule-text">Acerte pelo menos <strong>56 questões (70%)</strong> e atinja o mínimo nos quatro módulos com nota de corte. Questões em branco contam como erro.</p>
+          <div class="table-wrap">
+            <table class="mods">
+              <thead><tr><th colspan="2">Módulo</th><th class="num">Questões sorteadas</th><th class="num">Mínimo</th></tr></thead>
+              <tbody id="start-mods"></tbody>
+            </table>
+          </div>
+          <div class="start-actions">
+            <button id="btn-start" class="btn primary">Começar prova completa</button>
+          </div>
+        </section>
+
+        <section class="mode-card">
+          <h2>Treino por módulo</h2>
+          <p>Escolha um módulo e responda só questões dele, sorteadas do banco. A referência é acertar 70%.</p>
+          <div class="mode-form">
+            <label class="ident-field"><span>Módulo</span><select id="mod-pick"></select></label>
+            <label class="ident-field"><span>Quantidade de questões</span><select id="qty-pick"></select></label>
+          </div>
+          <p class="hint" id="qty-note"></p>
+          <div class="start-actions">
+            <button id="btn-start-mod" class="btn primary">Começar treino</button>
+          </div>
+        </section>
+        <p class="hint">Atalhos de teclado: <kbd>A</kbd> a <kbd>D</kbd> marcam a alternativa, <kbd>←</kbd> <kbd>→</kbd> trocam de questão, <kbd>M</kbd> marca para revisar.</p>
+      </div>
+
+      <div id="panel-mine" role="tabpanel" aria-labelledby="tab-mine" hidden>
+        <div id="mine-body"></div>
+      </div>
     </main>
   </div>
 </section>
@@ -477,10 +527,11 @@ dialog::backdrop{background:rgba(14,18,30,.5)}
         <span id="mode-tag" class="mode-tag" hidden>Modo de teste</span>
         <span id="save-state" class="save-state" hidden><i aria-hidden="true"></i><span id="save-text">Salvo</span></span>
         <span class="timer" title="Tempo decorrido"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="8" cy="8.5" r="6"/><path d="M8 5.5v3l2 1.5M6.5 1.5h3"/></svg><span class="sr-only">Tempo decorrido: </span><span id="timer">00:00:00</span></span>
-        <span><strong id="answered-count">0</strong>/80<span class="lbl-wide"> respondidas</span></span>
+        <span><strong id="answered-count">0</strong>/<span id="answered-total">80</span><span class="lbl-wide"> respondidas</span></span>
       </div>
       <div class="top-actions">
         <button id="btn-exit-preview" class="btn small ghost" hidden>Sair do teste</button>
+        <button id="btn-pause" class="btn small ghost" hidden>Pausar</button>
         <button id="btn-sheet" class="btn small only-narrow" aria-controls="sheet" aria-expanded="false">Cartão</button>
         <button id="btn-finish" class="btn small">Finalizar</button>
       </div>
@@ -489,7 +540,7 @@ dialog::backdrop{background:rgba(14,18,30,.5)}
   <div class="exam-layout">
     <main class="question sheet">
       <div class="q-head">
-        <div class="q-num" aria-live="polite"><span class="sr-only">Questão </span><b id="q-num">1</b><span>de 80</span></div>
+        <div class="q-num" aria-live="polite"><span class="sr-only">Questão </span><b id="q-num">1</b><span>de <span id="q-total">80</span></span></div>
         <div class="q-mod"><strong id="q-mod-label">Módulo 1</strong><span id="q-mod-name">AAI</span></div>
       </div>
       <div id="q-stem" class="stem"></div>
@@ -520,13 +571,13 @@ dialog::backdrop{background:rgba(14,18,30,.5)}
   <div class="center-wrap">
     <main class="notice sheet">
       <h1>Simulado enviado</h1>
-      <p>Suas respostas foram registradas. A correção fica com quem aplicou o simulado.</p>
+      <p>Suas respostas foram registradas. O resultado e a correção ficam em <strong>Meus resultados</strong>.</p>
       <ul class="facts">
         <li><span>Enviado em</span><strong id="sent-when"></strong></li>
         <li><span>Respondidas</span><strong id="sent-count"></strong></li>
         <li><span>Duração</span><strong id="sent-dur"></strong></li>
       </ul>
-      <p>Esta tentativa já foi usada. Para fazer de novo, fale com quem aplicou o simulado.</p>
+      <div class="start-actions"><button id="btn-sent-home" class="btn primary">Ver meus resultados</button></div>
     </main>
   </div>
 </section>
@@ -556,7 +607,7 @@ dialog::backdrop{background:rgba(14,18,30,.5)}
     <div class="topbar-in">
       <div class="brand">Simulado <b>ANCORD</b><span class="wide" id="result-brand"></span></div>
       <div class="top-actions" style="margin-left:auto">
-        <button class="btn small js-back">Voltar ao painel</button>
+        <button class="btn small js-back" id="btn-top-back">Voltar ao painel</button>
       </div>
     </div>
   </header>
@@ -568,7 +619,7 @@ dialog::backdrop{background:rgba(14,18,30,.5)}
         <p id="verdict-why" class="verdict-why"></p>
       </div>
 
-      <h2>Critérios de aprovação</h2>
+      <h2 id="crit-title">Critérios de aprovação</h2>
       <ul id="criteria" class="criteria"></ul>
 
       <h2>Acertos por módulo</h2>
@@ -578,7 +629,7 @@ dialog::backdrop{background:rgba(14,18,30,.5)}
           <tbody id="mod-rows"></tbody>
         </table>
       </div>
-      <p class="table-note"><i></i>marca o mínimo exigido nos módulos com nota de corte.</p>
+      <p class="table-note" id="tick-note"><i></i>marca o mínimo exigido nos módulos com nota de corte.</p>
 
       <h2>Cartão corrigido</h2>
       <p class="hint" style="margin:-4px 0 14px">Anel verde é o gabarito, bolinha preenchida é a marcação. Clique em uma linha para ver a correção da questão.</p>
@@ -635,6 +686,7 @@ var FAMILY = {"S1-47": "T-39", "S1-72": "T-73"};
 var TOTAL = 80;
 var QUESTIONS = [];
 var PASS = 56;
+var MOD_PASS = 0.7;   // referência de aprovação nos treinos por módulo
 var L = ['A','B','C','D'];
 
 var BY_ID = {}, POOL = {};
@@ -661,6 +713,37 @@ function drawIds(){
     }
   });
   return out;
+}
+function attemptMode(d){ return d && d.modo==='modulo' ? 'modulo' : 'completo'; }
+function modById(id){ return MODULES[id-1]; }
+function attemptLabel(d){
+  if (attemptMode(d)!=='modulo') return 'Prova completa';
+  var m = modById(+d.modulo);
+  return 'Treino: Módulo '+d.modulo+(m ? ', '+m.name : '');
+}
+function poolMax(mid){
+  var seen = {}, n = 0;
+  POOL[mid].forEach(function(q){ var f = fam(q.id); if (!seen[f]){ seen[f] = true; n++; } });
+  return n;
+}
+function drawModuleIds(mid, count){
+  var pool = POOL[mid].slice(), used = {}, out = [];
+  for (var i=pool.length-1;i>0;i--){ var j = rnd(i+1), t = pool[i]; pool[i] = pool[j]; pool[j] = t; }
+  for (var k=0;k<pool.length && out.length<count;k++){
+    var f = fam(pool[k].id); if (used[f]) continue;
+    used[f] = true; out.push(pool[k].id);
+  }
+  return out;
+}
+function docIdsOk(d){
+  if (!d) return false;
+  if (attemptMode(d)==='modulo'){
+    var mid = +d.modulo, ids = d.questoes, seen = {};
+    if (!modById(mid) || !Array.isArray(ids) || !ids.length) return false;
+    for (var i=0;i<ids.length;i++){ var q = BY_ID[ids[i]]; if (!q || q.m.id!==mid || seen[ids[i]]) return false; seen[ids[i]] = true; }
+    return true;
+  }
+  return validIds(d.questoes);
 }
 function validIds(ids){
   if (!Array.isArray(ids) || ids.length!==TOTAL) return false;
@@ -700,9 +783,9 @@ function withTimeout(p, ms){
     p.then(function(v){ clearTimeout(t); res(v); }, function(e){ clearTimeout(t); rej(e); });
   });
 }
-function cleanAnswers(arr){
-  var out=[];
-  for (var i=0;i<TOTAL;i++){ var v = arr && arr[i]; out.push(v===0||v===1||v===2||v===3 ? v : null); }
+function cleanAnswers(arr, n){
+  var out=[]; n = n || TOTAL;
+  for (var i=0;i<n;i++){ var v = arr && arr[i]; out.push(v===0||v===1||v===2||v===3 ? v : null); }
   return out;
 }
 function countAnswered(a){ return a.filter(function(v){ return v!==null; }).length; }
@@ -778,16 +861,18 @@ var S = null;          // {answers, flags, current, inicio, startMs}
 var examKind = null;   // 'student' | 'preview'
 var existing = null;   // envio em andamento encontrado ao abrir
 
-function newState(iso, ids){
-  var a=[], f=[];
-  for (var i=0;i<TOTAL;i++){ a.push(null); f.push(false); }
+function newState(iso, ids, meta){
+  meta = meta || {};
+  var n = ids.length, a=[], f=[];
+  for (var i=0;i<n;i++){ a.push(null); f.push(false); }
   QUESTIONS = questionsFor(ids);
-  return {answers:a, flags:f, current:0, inicio:iso, startMs:Date.parse(iso), ids:ids.slice()};
+  return {answers:a, flags:f, current:0, inicio:iso, startMs:Date.parse(iso), ids:ids.slice(), n:n,
+          aid:meta.aid || null, modo:meta.modo || 'completo', modulo:meta.modulo || 0};
 }
-function stateFromDoc(d){
-  var st = newState(d.inicio, d.questoes);
-  st.answers = cleanAnswers(d.respostas);
-  (Array.isArray(d.marcadas) ? d.marcadas : []).forEach(function(i){ if (i>=0 && i<TOTAL) st.flags[i] = true; });
+function stateFromDoc(d, aid){
+  var st = newState(d.inicio, d.questoes, {aid:aid, modo:attemptMode(d), modulo:+d.modulo || 0});
+  st.answers = cleanAnswers(d.respostas, st.n);
+  (Array.isArray(d.marcadas) ? d.marcadas : []).forEach(function(i){ if (i>=0 && i<st.n) st.flags[i] = true; });
   var first = st.answers.indexOf(null);
   st.current = first>=0 ? first : 0;
   return st;
@@ -799,10 +884,10 @@ var saveTimer = null, saving = Promise.resolve(), dirty = false;
 function docBody(status){
   var now = new Date().toISOString();
   var marks = []; S.flags.forEach(function(f,i){ if (f) marks.push(i); });
-  return {status:status, inicio:S.inicio, fim: status==='enviado' ? now : null, questoes:S.ids.slice(), respostas:S.answers.slice(), marcadas:marks, atualizado:now};
+  return {status:status, modo:S.modo, modulo:S.modulo, inicio:S.inicio, fim: status==='enviado' ? now : null, questoes:S.ids.slice(), respostas:S.answers.slice(), marcadas:marks, atualizado:now};
 }
 function writeDoc(body){
-  var ref = api.db.doc('envios/'+me.id);
+  var ref = api.db.doc('envios/'+S.aid);
   return ref.set(body).catch(function(e){
     if (e && e.code==='unavailable'){
       return new Promise(function(r){ setTimeout(r, 500+Math.random()*900); }).then(function(){ return ref.set(body); });
@@ -877,7 +962,7 @@ function renderQuestion(){
     box.appendChild(b); optButtons.push(b);
   });
   $('#btn-prev').disabled = i===0;
-  $('#btn-next').textContent = i===TOTAL-1 ? (examKind==='student' ? 'Enviar simulado' : 'Finalizar teste') : 'Próxima';
+  $('#btn-next').textContent = i===S.n-1 ? (examKind==='student' ? 'Enviar simulado' : 'Finalizar teste') : 'Próxima';
   $('#btn-flag').setAttribute('aria-pressed', S.flags[i] ? 'true' : 'false');
   $('#btn-clear').disabled = S.answers[i]===null;
   markCurrentRow();
@@ -906,32 +991,32 @@ function toggleFlag(){
   updateRow(i); scheduleSave();
 }
 function goTo(i){
-  if (i<0 || i>=TOTAL) return;
+  if (i<0 || i>=S.n) return;
   S.current = i;
   renderQuestion();
   var top = $('.question').getBoundingClientRect().top;
   if (top < 0 || top > window.innerHeight*0.4) window.scrollTo(0,0);
 }
-function next(){ if (S.current===TOTAL-1) finish(); else goTo(S.current+1); }
+function next(){ if (S.current===S.n-1) finish(); else goTo(S.current+1); }
 function prev(){ goTo(S.current-1); }
 
 /* Cartão-resposta */
 var rows = [];
 function buildSheet(){
   var wrap = $('#sheet-rows'); wrap.innerHTML = ''; rows = [];
-  MODULES.forEach(function(m){
-    var g = document.createElement('div'); g.className = 'sheet-group';
-    g.innerHTML = '<div class="sheet-mod"><b>Módulo '+m.id+'</b>'+esc(m.name)+'</div>';
-    for (var n=m.from; n<=m.to; n++){
-      (function(i){
-        var b = document.createElement('button');
-        b.type = 'button'; b.className = 'srow';
-        b.innerHTML = '<span class="sn">'+pad(i+1)+'</span>'+L.map(function(l){ return '<span class="sb" aria-hidden="true">'+l+'</span>'; }).join('')+'<span class="sflag" aria-hidden="true"></span>';
-        b.addEventListener('click', function(){ goTo(i); closeSheet(); });
-        g.appendChild(b); rows[i] = b;
-      })(n-1);
+  var g = null, cur = null;
+  QUESTIONS.forEach(function(q, i){
+    if (q.m!==cur){
+      cur = q.m;
+      g = document.createElement('div'); g.className = 'sheet-group';
+      g.innerHTML = '<div class="sheet-mod"><b>Módulo '+cur.id+'</b>'+esc(cur.name)+'</div>';
+      wrap.appendChild(g);
     }
-    wrap.appendChild(g);
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'srow';
+    b.innerHTML = '<span class="sn">'+pad(i+1)+'</span>'+L.map(function(l){ return '<span class="sb" aria-hidden="true">'+l+'</span>'; }).join('')+'<span class="sflag" aria-hidden="true"></span>';
+    b.addEventListener('click', function(){ goTo(i); closeSheet(); });
+    g.appendChild(b); rows[i] = b;
   });
 }
 function updateRow(i){
@@ -967,7 +1052,11 @@ if (narrow.addEventListener) narrow.addEventListener('change', onNarrowChange); 
 
 function enterExam(kind){
   examKind = kind;
-  for (var i=0;i<TOTAL;i++) updateRow(i);
+  buildSheet();
+  $('#q-total').textContent = S.n; $('#answered-total').textContent = S.n;
+  $('#btn-pause').hidden = kind!=='student';
+  $('#btn-finish').disabled = false; $('#btn-next').disabled = false;
+  for (var i=0;i<S.n;i++) updateRow(i);
   updateCount();
   $('#save-state').hidden = kind!=='student';
   $('#mode-tag').hidden = kind!=='preview';
@@ -981,21 +1070,21 @@ function enterExam(kind){
 
 function finish(){
   var answered = countAnswered(S.answers);
-  var blank = TOTAL - answered;
+  var blank = S.n - answered;
   var flagged = S.flags.filter(Boolean).length;
   var html = blank
-    ? '<p>'+(examKind==='student'?'Você respondeu':'Foram respondidas')+' <strong>'+answered+' de 80</strong> questões. '+(blank===1?'A questão em branco conta':'As <strong>'+blank+'</strong> questões em branco contam')+' como erro.</p>'
-    : '<p>Todas as 80 questões foram respondidas.</p>';
+    ? '<p>'+(examKind==='student'?'Você respondeu':'Foram respondidas')+' <strong>'+answered+' de '+S.n+'</strong> questões. '+(blank===1?'A questão em branco conta':'As <strong>'+blank+'</strong> questões em branco contam')+' como erro.</p>'
+    : '<p>Todas as '+S.n+' questões foram respondidas.</p>';
   if (flagged) html += '<p>'+(flagged===1?'Há <strong>1</strong> questão marcada':'Há <strong>'+flagged+'</strong> questões marcadas')+' para revisar.</p>';
   if (examKind==='student'){
-    html += '<p>Depois de enviar, não é possível alterar as respostas nem refazer o simulado.</p>';
-    ask({title:'Enviar simulado?', html:html, ok:'Enviar respostas', cancel:'Voltar à prova'}).then(function(ok){ if (ok) sendStudent(); });
+    html += '<p>Depois de enviar, as respostas não podem mais ser alteradas. Você vê o resultado e a correção na hora e pode fazer outra prova quando quiser.</p>';
+    ask({title: S.modo==='modulo' ? 'Enviar treino?' : 'Enviar simulado?', html:html, ok:'Enviar respostas', cancel:'Voltar à prova'}).then(function(ok){ if (ok) sendStudent(); });
   } else {
     html += '<p>Este é o modo de teste: nada é salvo.</p>';
     ask({title:'Finalizar teste?', html:html, ok:'Ver correção', cancel:'Voltar à prova'}).then(function(ok){
       if (!ok) return;
       closeSheet();
-      var ctx = {answers:S.answers.slice(), flags:S.flags.slice(), qs:QUESTIONS, elapsed:elapsedNow(), who:null, kind:'preview'};
+      var ctx = {answers:S.answers.slice(), flags:S.flags.slice(), qs:QUESTIONS, modo:S.modo, elapsed:elapsedNow(), who:null, kind:'preview'};
       examKind = null; S = null;
       openResult(ctx, true);
     });
@@ -1009,8 +1098,13 @@ function sendStudent(){
   $('#btn-finish').disabled = true; $('#btn-next').disabled = true;
   saving = saving.then(function(){ return writeDoc(body); });
   saving.then(function(){
-    examKind = null; closeSheet();
-    showSent(body);
+    var aid = S.aid;
+    examKind = null; S = null; closeSheet();
+    show('loading');
+    refreshMine().then(function(){
+      var m = findMine(aid);
+      if (m && m.g) openMine(m, true); else showSent(body);
+    }, function(){ showSent(body); });
   }, function(){
     saving = Promise.resolve();
     $('#btn-finish').disabled = false; $('#btn-next').disabled = false;
@@ -1020,68 +1114,215 @@ function sendStudent(){
 }
 
 function showSent(d){
-  var a = cleanAnswers(d.respostas);
+  var n = Array.isArray(d.questoes) ? d.questoes.length : TOTAL;
+  var a = cleanAnswers(d.respostas, n);
   $('#sent-when').textContent = fmtDate(d.fim);
-  $('#sent-count').textContent = countAnswered(a)+' de 80';
+  $('#sent-count').textContent = countAnswered(a)+' de '+n;
   $('#sent-dur').textContent = fmtDuration(Date.parse(d.fim) - Date.parse(d.inicio));
   show('sent');
 }
 
 /* ---------- Aluno ---------- */
+var MINE = [];          // provas enviadas do aluno: {id, d, qs, answers, g}
+var existingId = null;  // id da prova em andamento
+var mineTab = 'new';
+function findMine(id){ for (var i=0;i<MINE.length;i++) if (MINE[i].id===id) return MINE[i]; return null; }
+function newAttemptId(){ return me.email+'|'+Date.now().toString(36)+rnd(1679616).toString(36); }
+function refreshMine(){
+  return withTimeout(serverCall({acao:'meus', email:me.email}), 15000).then(function(r){
+    KEY = {}; CAVEATS = {};
+    var ch = r.chaves || {};
+    Object.keys(ch).forEach(function(id){ var v = L.indexOf(String(ch[id]).trim().toUpperCase()); if (v>=0) KEY[id] = v; });
+    (Array.isArray(r.ressalvas) ? r.ressalvas : []).forEach(function(id){ CAVEATS[id] = true; });
+    MINE = []; existing = null; existingId = null;
+    var seen = {};
+    (Array.isArray(r.tentativas) ? r.tentativas : []).forEach(function(t){
+      var d = t.doc; seen[t.id] = true;
+      if (!d || !docIdsOk(d)) return;
+      if (d.status==='enviado'){
+        var qs = questionsFor(d.questoes), ans = cleanAnswers(d.respostas, qs.length);
+        var ok = qs.every(function(q){ return KEY.hasOwnProperty(q.id); });
+        MINE.push({id:t.id, d:d, qs:qs, answers:ans, g: ok ? grade(ans, qs, attemptMode(d)) : null});
+        lsSet('envio:'+t.id, null);
+      } else {
+        var local = lsGet('envio:'+t.id);
+        var dd = newer(local && local.status!=='enviado' && docIdsOk(local) ? local : null, d);
+        if (!existing || String(dd.inicio) > String(existing.inicio)){ existing = dd; existingId = t.id; }
+      }
+    });
+    var cur = lsGet('atual:'+me.email);
+    if (cur && !seen[cur]){
+      var ld = lsGet('envio:'+cur);
+      if (ld && ld.status!=='enviado' && docIdsOk(ld) && (!existing || String(ld.inicio) > String(existing.inicio))){ existing = ld; existingId = cur; }
+    }
+    MINE.sort(function(x,y){ return String(y.d.fim).localeCompare(String(x.d.fim)); });
+  });
+}
 function loadStudent(){
-  if (me.canWrite===false){
-    return notice('Acesso só de visualização', '<p>Com o acesso que você tem a esta página, suas respostas não poderiam ser registradas.</p><p>Peça a quem enviou o simulado para liberar acesso de participação (o nível que permite usar a página, não só visualizar).</p>');
-  }
-  withTimeout(api.db.doc('envios/'+me.id).get(), 12000).then(function(snap){
-    var d = snap.exists ? snap.data() : null;
-    if (d && d.status==='enviado') return showSent(d);
-    existing = (d && d.inicio && validIds(d.questoes)) ? d : null;
-    refreshStart();
-    show('start');
-  }, function(){
+  refreshMine().then(function(){ showHome('new'); }, function(){
     notice('O simulado não carregou', '<p>O servidor não respondeu a tempo. Verifique sua conexão e abra o link de novo.</p>');
   });
 }
-function refreshStart(){
-  var b = $('#btn-start');
-  b.disabled = false;
-  if (existing){
-    b.textContent = 'Continuar simulado ('+countAnswered(cleanAnswers(existing.respostas))+' de 80 respondidas)';
-    $('#start-time-note').innerHTML = 'Você começou em <strong>'+esc(fmtDate(existing.inicio))+'</strong>. O tempo continua contando desde então.';
-  } else {
-    b.textContent = 'Começar simulado';
-  }
+function selectTab(t){
+  mineTab = t;
+  $('#tab-new').setAttribute('aria-selected', t==='new' ? 'true' : 'false');
+  $('#tab-mine').setAttribute('aria-selected', t==='mine' ? 'true' : 'false');
+  $('#panel-new').hidden = t!=='new';
+  $('#panel-mine').hidden = t!=='mine';
 }
-function startStudent(){
-  var b = $('#btn-start');
-  if (existing){ S = stateFromDoc(existing); existing = null; enterExam('student'); return; }
-  b.disabled = true; b.textContent = 'Abrindo…';
-  S = newState(new Date().toISOString(), drawIds());
-  writeDoc(docBody('andamento')).then(function(){ enterExam('student'); }, function(e){
-    S = null;
-    if (e && e.code==='invalid_argument'){
-      notice('Não foi possível registrar sua tentativa', '<p>Seu acesso a esta página não permite enviar respostas. O simulado aceita envios de pessoas da organização com acesso de participação.</p><p>Peça a quem enviou o link para conferir seu acesso.</p>');
-    } else {
-      refreshStart();
-      ask({title:'Não foi possível começar', html:'<p>O servidor não respondeu. Verifique sua conexão e tente de novo.</p>', ok:'Entendi'});
-    }
+function showHome(t){
+  R = null;
+  renderResume(); renderMine();
+  selectTab(t || mineTab);
+  show('start');
+}
+function renderResume(){
+  var box = $('#resume-box');
+  if (!existing){ box.hidden = true; box.innerHTML = ''; return; }
+  var n = existing.questoes.length;
+  box.innerHTML = '<p><strong>Você tem uma prova em andamento.</strong> '+esc(attemptLabel(existing))+', '+countAnswered(cleanAnswers(existing.respostas, n))+' de '+n+' respondidas. Começou em '+esc(fmtDate(existing.inicio))+'; o tempo continua contando desde então.</p>'+
+    '<div class="start-actions"><button type="button" class="btn primary" id="btn-resume">Continuar</button> <button type="button" class="btn" id="btn-discard">Descartar</button></div>';
+  box.hidden = false;
+  $('#btn-resume').addEventListener('click', function(){ S = stateFromDoc(existing, existingId); existing = null; enterExam('student'); });
+  $('#btn-discard').addEventListener('click', function(){
+    ask({title:'Descartar a prova em andamento?', html:'<p>As respostas desta prova serão apagadas e ela não vai aparecer nos seus resultados.</p>', ok:'Descartar', cancel:'Cancelar'}).then(function(ok){
+      if (ok) discardExisting().then(function(){ renderResume(); }, discardFailed);
+    });
   });
 }
-
+function discardExisting(){
+  var id = existingId;
+  if (!id) return Promise.resolve();
+  return serverCall({acao:'descartar', id:id, email:me.email}).then(function(){
+    lsSet('envio:'+id, null); existing = null; existingId = null;
+  });
+}
+function discardFailed(e){
+  if (e && e.code==='ja_enviado'){ show('loading'); return loadStudent(); }
+  ask({title:'Não foi possível descartar', html:'<p>O servidor não respondeu. Verifique sua conexão e tente de novo.</p>', ok:'Entendi'});
+}
+function buildModulePicker(){
+  $('#mod-pick').innerHTML = MODULES.map(function(m){
+    return '<option value="'+m.id+'">Módulo '+m.id+': '+esc(m.name)+' ('+poolMax(m.id)+' questões)</option>';
+  }).join('');
+  updateQty();
+}
+function updateQty(){
+  var mid = +$('#mod-pick').value, max = poolMax(mid);
+  var opts = [10,20,30,40,50,60].filter(function(n){ return n<max; });
+  opts.push(max);
+  var def = max>=40 ? 40 : max;
+  $('#qty-pick').innerHTML = opts.map(function(n){ return '<option value="'+n+'"'+(n===def?' selected':'')+'>'+(n===max ? 'Todas ('+n+')' : n)+'</option>'; }).join('');
+  $('#qty-note').textContent = 'O banco tem '+max+' questões deste módulo.';
+}
+function startNew(modo){
+  var go = function(){
+    var ids, meta;
+    if (modo==='modulo'){
+      var mid = +$('#mod-pick').value, n = +$('#qty-pick').value;
+      ids = drawModuleIds(mid, n); meta = {modo:'modulo', modulo:mid};
+    } else {
+      ids = drawIds(); meta = {modo:'completo', modulo:0};
+    }
+    meta.aid = newAttemptId();
+    S = newState(new Date().toISOString(), ids, meta);
+    lsSet('atual:'+me.email, meta.aid);
+    writeDoc(docBody('andamento')).then(function(){ existing = null; existingId = null; enterExam('student'); }, function(){
+      S = null;
+      ask({title:'Não foi possível começar', html:'<p>O servidor não respondeu. Verifique sua conexão e tente de novo.</p>', ok:'Entendi'});
+    });
+  };
+  if (!existing) return go();
+  ask({title:'Você tem uma prova em andamento', html:'<p>Para começar outra, a prova em andamento ('+esc(attemptLabel(existing))+') será descartada, com as respostas dela.</p><p>Se preferir terminá-la antes, use <strong>Continuar</strong>.</p>', ok:'Descartar e começar', cancel:'Cancelar'}).then(function(ok){
+    if (ok) discardExisting().then(go, discardFailed);
+  });
+}
+function pauseStudent(){
+  flush();
+  closeSheet();
+  var body = docBody('andamento');
+  saving.then(function(){}, function(){}).then(function(){
+    existing = body; existingId = S.aid;
+    examKind = null; S = null;
+    showHome('new');
+  });
+}
+function verdictTag(g, modo){
+  if (!g) return '–';
+  if (modo==='modulo') return g.pass ? '<span class="tag tag-pass">70% ou mais</span>' : '<span class="tag tag-fail">Abaixo de 70%</span>';
+  return g.pass ? '<span class="tag tag-pass">Aprovado</span>' : '<span class="tag tag-fail">Reprovado</span>';
+}
+function renderMine(){
+  $('#mine-count').textContent = MINE.length ? MINE.length : '';
+  if (!MINE.length){
+    $('#mine-body').innerHTML = '<p class="empty-dash">Você ainda não enviou nenhuma prova. Quando enviar, o resultado e a correção de cada uma aparecem aqui.</p>';
+    return;
+  }
+  var full = MINE.filter(function(m){ return attemptMode(m.d)==='completo' && m.g; });
+  var trains = MINE.filter(function(m){ return attemptMode(m.d)==='modulo'; });
+  var s = '';
+  if (full.length){
+    var best = Math.max.apply(null, full.map(function(m){ return m.g.right; }));
+    var pass = full.filter(function(m){ return m.g.pass; }).length;
+    s += '<strong>'+full.length+'</strong> '+(full.length===1?'prova completa':'provas completas')+', <strong>'+pass+'</strong> '+(pass===1?'aprovada':'aprovadas')+'. Melhor nota: <strong>'+best+' de 80</strong>. ';
+  }
+  if (trains.length) s += '<strong>'+trains.length+'</strong> '+(trains.length===1?'treino':'treinos')+' por módulo.';
+  var h = '<p class="mine-sum">'+s+'</p>';
+  h += '<div class="table-wrap"><table class="students mine"><thead><tr><th>Data</th><th>Tipo</th><th class="num">Acertos</th><th class="num">%</th><th>Resultado</th><th class="num">Duração</th></tr></thead><tbody>';
+  MINE.forEach(function(m, i){
+    var n = m.qs.length;
+    h += '<tr class="'+(m.g?'clickable':'')+'" data-i="'+i+'"><td>'+(m.g ? '<button type="button" class="linkbtn">'+esc(fmtShort(m.d.fim))+'</button>' : esc(fmtShort(m.d.fim)))+'</td>'+
+      '<td>'+esc(attemptLabel(m.d))+'</td>'+
+      '<td class="num">'+(m.g ? m.g.right+' de '+n : '–')+'</td>'+
+      '<td class="num">'+(m.g ? fmtPct(m.g.right/n*100)+'%' : '–')+'</td>'+
+      '<td>'+verdictTag(m.g, attemptMode(m.d))+'</td>'+
+      '<td class="num">'+fmtDuration(Date.parse(m.d.fim)-Date.parse(m.d.inicio))+'</td></tr>';
+  });
+  h += '</tbody></table></div>';
+  var agg = MODULES.map(function(md){ return {m:md, right:0, total:0}; });
+  MINE.forEach(function(m){ if (m.g) m.g.per.forEach(function(p){ agg[p.m.id-1].right += p.right; agg[p.m.id-1].total += p.total; }); });
+  var any = agg.filter(function(a){ return a.total>0; });
+  if (any.length){
+    h += '<h2>Seu desempenho por módulo</h2><p class="dash-note">Soma de todas as provas e treinos enviados.</p>';
+    h += '<div class="table-wrap"><table class="mod-table"><thead><tr><th>Módulo</th><th class="num">Acertos</th><th class="col-bar">Aproveitamento</th><th class="num">%</th></tr></thead><tbody>';
+    any.forEach(function(a){
+      var pc = a.right/a.total*100;
+      h += '<tr><th scope="row"><div class="mt-cell"><span class="mt-n">'+a.m.id+'</span><span>'+esc(a.m.name)+'</span></div></th>'+
+        '<td class="num">'+a.right+' de '+a.total+'</td>'+
+        '<td class="col-bar"><div class="bar '+(pc>=70?'ok':'bad')+'"><span style="width:'+pc+'%"></span><i style="left:70%"></i></div></td>'+
+        '<td class="num">'+fmtPct(pc)+'%</td></tr>';
+    });
+    h += '</tbody></table></div><p class="table-note"><i></i>marca a referência de 70% de acertos.</p>';
+  }
+  $('#mine-body').innerHTML = h;
+  Array.prototype.forEach.call(document.querySelectorAll('#mine-body tr.clickable'), function(tr){
+    tr.addEventListener('click', function(){ openMine(MINE[+tr.getAttribute('data-i')], false); });
+  });
+}
+function openMine(m, animate){
+  var n = m.qs.length, flags = [];
+  for (var k=0;k<n;k++) flags.push(false);
+  (Array.isArray(m.d.marcadas) ? m.d.marcadas : []).forEach(function(x){ if (x>=0 && x<n) flags[x] = true; });
+  openResult({answers:m.answers, flags:flags, qs:m.qs, modo:attemptMode(m.d), modulo:+m.d.modulo || 0,
+              elapsed:Date.parse(m.d.fim)-Date.parse(m.d.inicio), who:null, kind:'mine', id:m.id}, animate);
+}
 /* ---------- Correção ---------- */
-function grade(answers, qs){
+function grade(answers, qs, modo){
   qs = qs || QUESTIONS;
-  var per = MODULES.map(function(m){ return {m:m, right:0, total:m.to-m.from+1}; });
+  var full = modo!=='modulo', n = qs.length;
+  var per = MODULES.map(function(m){ return {m:m, right:0, total:0, min: full ? (m.min || 0) : 0}; });
   var res = qs.map(function(q,i){
     var a = answers[i];
     var st = a===null ? 'blank' : (a===KEY[q.id] ? 'right' : 'wrong');
+    per[q.m.id-1].total++;
     if (st==='right') per[q.m.id-1].right++;
     return st;
   });
   var right = res.filter(function(s){ return s==='right'; }).length;
-  var crit = [{label:'Geral', got:right, of:TOTAL, need:PASS, ok:right>=PASS}];
-  per.forEach(function(p){ if (p.m.min) crit.push({label:'Módulo '+p.m.id+', '+p.m.name, mod:p.m.id, got:p.right, of:p.total, need:p.m.min, ok:p.right>=p.m.min}); });
-  return {res:res, per:per, right:right, crit:crit, pass:crit.every(function(c){ return c.ok; })};
+  var need = full ? PASS : Math.ceil(n*MOD_PASS);
+  var crit = [{label: full ? 'Geral' : 'Referência de 70%', got:right, of:n, need:need, ok:right>=need}];
+  if (full) per.forEach(function(p){ if (p.min) crit.push({label:'Módulo '+p.m.id+', '+p.m.name, mod:p.m.id, got:p.right, of:p.total, need:p.min, ok:p.right>=p.min}); });
+  return {res:res, per:per.filter(function(p){ return p.total>0; }), right:right, n:n, full:full, crit:crit, pass:crit.every(function(c){ return c.ok; })};
 }
 
 var R = null;   // contexto do resultado aberto
@@ -1090,16 +1331,22 @@ var ICON_OK = '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke
 var ICON_BAD = '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M3.5 3.5l7 7M10.5 3.5l-7 7"/></svg>';
 
 function openResult(ctx, animate){
-  R = ctx; QUESTIONS = ctx.qs; R.g = grade(ctx.answers);
+  R = ctx; QUESTIONS = ctx.qs; R.g = grade(ctx.answers, ctx.qs, ctx.modo);
   filter = {kind:'all', mod:0};
-  var G = R.g, pct = G.right/TOTAL*100;
-  $('#result-brand').textContent = ctx.who ? ' – '+ctx.who : ' – seu teste';
+  var G = R.g, pct = G.right/G.n*100;
+  $('#result-brand').textContent = ctx.who ? ' – '+ctx.who : (ctx.kind==='mine' ? ' – seu resultado' : ' – seu teste');
+  $('#btn-top-back').textContent = ctx.kind==='mine' ? 'Voltar' : 'Voltar ao painel';
+  $('#crit-title').textContent = G.full ? 'Critérios de aprovação' : 'Referência do treino';
+  $('#tick-note').hidden = !G.full;
   var v = $('#verdict');
   v.className = 'verdict '+(G.pass?'pass':'fail')+(animate?' reveal':'');
-  $('#verdict-word').textContent = G.pass ? 'Aprovado' : 'Reprovado';
-  $('#verdict-line').innerHTML = (ctx.who ? esc(ctx.who)+' acertou' : 'Você acertou')+' <strong>'+G.right+' de 80</strong> questões, <strong>'+fmtPct(pct)+'%</strong> de aproveitamento.';
+  $('#verdict-word').textContent = G.full ? (G.pass ? 'Aprovado' : 'Reprovado') : (G.pass ? 'Meta atingida' : 'Abaixo da meta');
+  $('#verdict-line').innerHTML = (ctx.who ? esc(ctx.who)+' acertou' : 'Você acertou')+' <strong>'+G.right+' de '+G.n+'</strong> questões, <strong>'+fmtPct(pct)+'%</strong> de aproveitamento.';
   var why;
-  if (G.pass){
+  if (!G.full){
+    var mm = G.per[0] ? G.per[0].m : null;
+    why = (mm ? 'Treino do Módulo '+mm.id+', '+mm.name+'. ' : '')+(G.pass ? 'Atingiu a referência de 70% de acertos.' : 'Para chegar a 70%, faltaram '+(G.crit[0].need-G.right)+' acertos.');
+  } else if (G.pass){
     why = 'Atingiu o mínimo geral e o mínimo dos quatro módulos com nota de corte.';
   } else {
     var parts = G.crit.filter(function(c){ return !c.ok; }).map(function(c){
@@ -1119,11 +1366,11 @@ function openResult(ctx, animate){
 
   $('#mod-rows').innerHTML = G.per.map(function(p){
     var pc = p.right/p.total*100;
-    var hasMin = !!p.m.min, okMin = hasMin && p.right>=p.m.min;
+    var hasMin = !!p.min, okMin = hasMin && p.right>=p.min;
     var barCls = hasMin ? (okMin?'ok':'bad') : '';
-    var tick = hasMin ? '<i style="left:'+(p.m.min/p.total*100)+'%"></i>' : '';
+    var tick = hasMin ? '<i style="left:'+(p.min/p.total*100)+'%"></i>' : '';
     var minCell = hasMin
-      ? '<td class="num '+(okMin?'minok':'minbad')+'">'+p.m.min+' '+(okMin?'✓':'✗')+'<span class="sr-only">'+(okMin?' atingido':' não atingido')+'</span></td>'
+      ? '<td class="num '+(okMin?'minok':'minbad')+'">'+p.min+' '+(okMin?'✓':'✗')+'<span class="sr-only">'+(okMin?' atingido':' não atingido')+'</span></td>'
       : '<td class="num nomin">–</td>';
     return '<tr'+(hasMin&&!okMin?' class="fail"':'')+'><th scope="row"><div class="mt-cell"><span class="mt-n">'+p.m.id+'</span><span>'+esc(p.m.name)+'</span></div></th>'+
       '<td class="num">'+p.right+' de '+p.total+'</td>'+
@@ -1145,15 +1392,27 @@ function openResult(ctx, animate){
   });
 
   var sel = $('#mod-filter');
-  sel.innerHTML = '<option value="0">Todos os módulos</option>'+MODULES.map(function(m){ return '<option value="'+m.id+'">Módulo '+m.id+': '+esc(m.name)+'</option>'; }).join('');
+  sel.innerHTML = '<option value="0">Todos os módulos</option>'+G.per.map(function(p){ return p.m; }).map(function(m){ return '<option value="'+m.id+'">Módulo '+m.id+': '+esc(m.name)+'</option>'; }).join('');
   sel.value = '0';
   renderFilters();
   renderReview();
 
   var acts = $('#result-actions'); acts.innerHTML = '';
+  if (ctx.kind==='mine'){
+    var again2 = document.createElement('button');
+    again2.className = 'btn'; again2.textContent = 'Fazer outra prova';
+    again2.addEventListener('click', function(){ showHome('new'); });
+    acts.appendChild(again2);
+    var back2 = document.createElement('button');
+    back2.className = 'btn primary'; back2.textContent = 'Voltar aos meus resultados';
+    back2.addEventListener('click', function(){ showHome('mine'); });
+    acts.appendChild(back2);
+    show('result');
+    return;
+  }
   if (ctx.kind==='detail'){
     var del = document.createElement('button');
-    del.className = 'btn danger'; del.textContent = 'Liberar nova tentativa';
+    del.className = 'btn danger'; del.textContent = 'Apagar esta tentativa';
     del.addEventListener('click', function(){ releaseRetry(ctx); });
     acts.appendChild(del);
   } else {
@@ -1187,7 +1446,7 @@ function matches(i, kind, mod){
 function renderFilters(){
   var seg = $('#seg'); seg.innerHTML = '';
   KINDS.forEach(function(K){
-    var c = 0; for (var i=0;i<TOTAL;i++) if (matches(i, K.k, filter.mod)) c++;
+    var c = 0; for (var i=0;i<QUESTIONS.length;i++) if (matches(i, K.k, filter.mod)) c++;
     if ((K.k==='blank' || K.k==='flag') && c===0 && filter.kind!==K.k) return;
     var b = document.createElement('button');
     b.type = 'button';
@@ -1213,7 +1472,7 @@ function reviewCard(i){
   }).join('');
   return '<article class="rcard" id="rev-'+q.n+'">'+
     '<div class="rc-head"><span class="rc-n">Questão '+q.n+'</span><span class="rc-mod">Módulo '+q.m.id+', '+esc(q.m.name)+'</span>'+tag+'</div>'+
-    '<p class="rc-src">Origem: '+origin(q.src)+'</p>'+
+    (R.kind==='mine' ? '' : '<p class="rc-src">Origem: '+origin(q.src)+'</p>')+
     '<p class="rc-sum">'+sum+'</p>'+
     '<div class="stem">'+stemHTML(q)+'</div>'+
     '<ol class="rc-opts">'+opts+'</ol>'+
@@ -1223,7 +1482,7 @@ function reviewCard(i){
 }
 function renderReview(){
   var html = '';
-  for (var i=0;i<TOTAL;i++) if (matches(i, filter.kind, filter.mod)) html += reviewCard(i);
+  for (var i=0;i<QUESTIONS.length;i++) if (matches(i, filter.kind, filter.mod)) html += reviewCard(i);
   $('#review-list').innerHTML = html || '<p class="empty">Nenhuma questão neste filtro. Escolha outro resultado ou módulo.</p>';
 }
 function jumpToReview(i){
@@ -1293,11 +1552,13 @@ function drawDash(){
 
   var list = Object.keys(envios).map(function(id){
     var d = envios[id] || {}, p = profiles[id] || {};
-    var answers = cleanAnswers(d.respostas);
+    var modo = attemptMode(d);
+    var qs = docIdsOk(d) ? questionsFor(d.questoes) : null;
+    var n = qs ? qs.length : (Array.isArray(d.questoes) ? d.questoes.length : TOTAL);
+    var answers = cleanAnswers(d.respostas, n);
     var sent = d.status==='enviado';
-    var qs = validIds(d.questoes) ? questionsFor(d.questoes) : null;
-    return {id:id, d:d, sent:sent, answers:answers, qs:qs, name:p.name || '', email:p.email || '',
-            g: (sent && KEY && qs) ? grade(answers, qs) : null};
+    return {id:id, d:d, sent:sent, modo:modo, n:n, tipo:attemptLabel(d), answers:answers, qs:qs, name:p.name || '', email:p.email || '',
+            g: (sent && KEY && qs) ? grade(answers, qs, modo) : null};
   });
   list.sort(function(a,b){
     if (a.sent!==b.sent) return a.sent ? -1 : 1;
@@ -1307,7 +1568,10 @@ function drawDash(){
   dashRows = list;
   var sent = list.filter(function(r){ return r.sent; });
   var prog = list.length - sent.length;
-  var passed = sent.filter(function(r){ return r.g && r.g.pass; }).length;
+  var fullSent = sent.filter(function(r){ return r.modo==='completo'; });
+  var passed = fullSent.filter(function(r){ return r.g && r.g.pass; }).length;
+  var people = {}; list.forEach(function(r){ people[(r.email || r.id.split('|')[0]).toLowerCase()] = true; });
+  var nPeople = Object.keys(people).length;
 
   var h = '';
   if (keyState==='missing') h += '<p class="banner">O servidor não tem o gabarito, então ainda não dá para corrigir. Confira se a variável GABARITO está preenchida no código do Apps Script.</p>';
@@ -1317,15 +1581,16 @@ function drawDash(){
     h += '<p class="dash-sum">Ninguém começou o simulado ainda.</p>';
     h += '<p class="empty-dash">Envie o link da página aos alunos. Cada envio aparece aqui depois que a pessoa começa (a lista se atualiza sozinha a cada 30 segundos), e você recebe a correção completa quando ela termina.</p>';
   } else {
-    var s = '<strong>'+sent.length+'</strong> '+(sent.length===1?'pessoa enviou':'pessoas enviaram');
-    if (prog) s += ' e <strong>'+prog+'</strong> '+(prog===1?'está':'estão')+' fazendo agora';
+    var s = '<strong>'+nPeople+'</strong> '+(nPeople===1?'pessoa':'pessoas')+', <strong>'+sent.length+'</strong> '+(sent.length===1?'prova enviada':'provas enviadas')+
+      ' ('+fullSent.length+' '+(fullSent.length===1?'completa':'completas')+', '+(sent.length-fullSent.length)+' '+(sent.length-fullSent.length===1?'treino':'treinos')+' por módulo)';
+    if (prog) s += ' e <strong>'+prog+'</strong> em andamento';
     s += '.';
-    if (sent.length && KEY) s += ' <strong>'+passed+'</strong> '+(passed===1?'aprovado':'aprovados')+' entre quem enviou.';
+    if (fullSent.length && KEY) s += ' <strong>'+passed+'</strong> de '+fullSent.length+' provas completas '+(passed===1?'aprovada':'aprovadas')+'.';
     h += '<p class="dash-sum">'+s+'</p>';
-    h += '<p class="dash-note">Só quem tem o link do painel vê esta página e o gabarito. Os alunos veem apenas a prova e, ao final, a confirmação de envio.</p>';
+    h += '<p class="dash-note">Só quem tem o link do painel vê esta página e o gabarito completo. Cada aluno pode fazer quantas provas quiser; cada tentativa aparece numa linha. Ao enviar, o aluno vê o próprio resultado e a correção das questões que recebeu.</p>';
     if (dashNote) h += '<p class="banner">'+esc(dashNote)+'</p>';
 
-    h += '<h2>Alunos</h2><div class="table-wrap"><table class="students"><thead><tr><th>Aluno</th><th>Situação</th><th class="num">Acertos</th><th class="num">%</th><th>Resultado</th><th class="num">Duração</th><th class="num">Data</th></tr></thead><tbody>';
+    h += '<h2>Tentativas</h2><div class="table-wrap"><table class="students"><thead><tr><th>Aluno</th><th>Tipo</th><th>Situação</th><th class="num">Acertos</th><th class="num">%</th><th>Resultado</th><th class="num">Duração</th><th class="num">Data</th></tr></thead><tbody>';
     list.forEach(function(r, i){
       var nm = r.name || 'Pessoa sem nome visível';
       var nameCell = r.sent && r.g
@@ -1335,15 +1600,17 @@ function drawDash(){
       if (r.sent){
         var dur = fmtDuration(Date.parse(r.d.fim) - Date.parse(r.d.inicio));
         h += '<tr class="'+(r.g?'clickable':'')+'" data-i="'+i+'"><td>'+nameCell+'</td>'+
+          '<td>'+esc(r.tipo)+(r.modo==='modulo' ? '<span class="st-type">'+r.n+' questões</span>' : '')+'</td>'+
           '<td><span class="tag tag-sent">Enviado</span></td>'+
-          '<td class="num">'+(r.g ? r.g.right+' de 80' : '–')+'</td>'+
-          '<td class="num">'+(r.g ? fmtPct(r.g.right/TOTAL*100)+'%' : '–')+'</td>'+
-          '<td>'+(r.g ? (r.g.pass ? '<span class="tag tag-pass">Aprovado</span>' : '<span class="tag tag-fail">Reprovado</span>') : '–')+'</td>'+
+          '<td class="num">'+(r.g ? r.g.right+' de '+r.n : '–')+'</td>'+
+          '<td class="num">'+(r.g ? fmtPct(r.g.right/r.n*100)+'%' : '–')+'</td>'+
+          '<td>'+verdictTag(r.g, r.modo)+'</td>'+
           '<td class="num">'+dur+'</td>'+
           '<td class="num">'+esc(fmtShort(r.d.fim))+'</td></tr>';
       } else {
         h += '<tr><td>'+nameCell+'</td>'+
-          '<td><span class="tag tag-prog">Em andamento</span><span class="st-sub">'+countAnswered(r.answers)+' de 80 respondidas</span></td>'+
+          '<td>'+esc(r.tipo)+'</td>'+
+          '<td><span class="tag tag-prog">Em andamento</span><span class="st-sub">'+countAnswered(r.answers)+' de '+r.n+' respondidas</span></td>'+
           '<td class="num muted">–</td><td class="num muted">–</td><td class="muted">–</td>'+
           '<td class="num muted">'+fmtDuration(Date.now() - Date.parse(r.d.inicio))+' até agora</td>'+
           '<td class="num">início '+esc(fmtShort(r.d.inicio))+'</td></tr>';
@@ -1385,23 +1652,23 @@ function drawDash(){
 }
 function openDetail(i){
   var r = dashRows[i]; if (!r || !r.sent || !KEY || !r.qs) return;
-  var flags = []; for (var k=0;k<TOTAL;k++) flags.push(false);
-  (Array.isArray(r.d.marcadas) ? r.d.marcadas : []).forEach(function(x){ if (x>=0 && x<TOTAL) flags[x] = true; });
-  openResult({answers:r.answers, flags:flags, qs:r.qs, elapsed:Date.parse(r.d.fim)-Date.parse(r.d.inicio),
-              who:r.name || 'Pessoa sem nome visível', kind:'detail', id:r.id}, false);
+  var flags = []; for (var k=0;k<r.n;k++) flags.push(false);
+  (Array.isArray(r.d.marcadas) ? r.d.marcadas : []).forEach(function(x){ if (x>=0 && x<r.n) flags[x] = true; });
+  openResult({answers:r.answers, flags:flags, qs:r.qs, modo:r.modo, elapsed:Date.parse(r.d.fim)-Date.parse(r.d.inicio),
+              who:(r.name || 'Pessoa sem nome visível')+(r.modo==='modulo' ? ' (treino, Módulo '+r.d.modulo+')' : ''), kind:'detail', id:r.id}, false);
 }
 function backToDash(){ R = null; show('dash'); drawDash(); }
 function releaseRetry(ctx){
-  ask({title:'Liberar nova tentativa?', html:'<p>O envio de <strong>'+esc(ctx.who)+'</strong> será apagado, junto com a correção, e a pessoa poderá fazer o simulado de novo do zero.</p><p>Se quiser guardar este resultado, baixe a planilha antes.</p>', ok:'Apagar e liberar', cancel:'Cancelar'}).then(function(ok){
+  ask({title:'Apagar esta tentativa?', html:'<p>Esta tentativa de <strong>'+esc(ctx.who)+'</strong> será apagada, junto com a correção. Ela também some de Meus resultados para o aluno.</p><p>Se quiser guardar este resultado, baixe a planilha antes.</p>', ok:'Apagar', cancel:'Cancelar'}).then(function(ok){
     if (!ok) return;
     api.db.doc('envios/'+ctx.id).delete().then(backToDash, function(){
-      ask({title:'Não foi possível liberar', html:'<p>O servidor não respondeu. Verifique sua conexão e tente de novo.</p>', ok:'Entendi'});
+      ask({title:'Não foi possível apagar', html:'<p>O servidor não respondeu. Verifique sua conexão e tente de novo.</p>', ok:'Entendi'});
     });
   });
 }
 function startPreview(){
   if (!KEY) return;
-  S = newState(new Date().toISOString(), drawIds());
+  S = newState(new Date().toISOString(), drawIds(), {modo:'completo'});
   enterExam('preview');
 }
 function csvCell(v){
@@ -1412,21 +1679,22 @@ function csvCell(v){
 }
 function exportCSV(){
   if (!api.dl || !KEY) return;
-  var head = ['Aluno','E-mail','Situação','Início','Envio','Duração (min)','Respondidas','Acertos','Aproveitamento (%)','Resultado']
-    .concat(MODULES.map(function(m){ return 'M'+m.id+' '+m.name+' (de '+(m.to-m.from+1)+')'; }))
+  var head = ['Aluno','E-mail','Tipo','Questões','Situação','Início','Envio','Duração (min)','Respondidas','Acertos','Aproveitamento (%)','Resultado']
+    .concat(MODULES.map(function(m){ return 'M'+m.id+' '+m.name+' (acertos)'; }))
     .concat(['Questões sorteadas (origem: S1-05 = Simulado 01, questão 5; T = simulado base)','Respostas (A a D, - em branco)','Gabarito da prova sorteada']);
   var lines = [head];
   dashRows.forEach(function(r){
-    var g = r.g;
+    var g = r.g, perBy = {};
+    if (g) g.per.forEach(function(p){ perBy[p.m.id] = p; });
     lines.push([
-      r.name || 'Pessoa sem nome visível', r.email,
+      r.name || 'Pessoa sem nome visível', r.email, r.tipo, r.n,
       r.sent ? 'Enviado' : 'Em andamento',
       fmtShort(r.d.inicio), r.sent ? fmtShort(r.d.fim) : '',
       r.sent ? Math.round((Date.parse(r.d.fim)-Date.parse(r.d.inicio))/60000) : '',
       countAnswered(r.answers),
-      g ? g.right : '', g ? fmtPct(g.right/TOTAL*100) : '',
-      g ? (g.pass ? 'Aprovado' : 'Reprovado') : ''
-    ].concat(MODULES.map(function(m,k){ return g ? g.per[k].right : ''; }))
+      g ? g.right : '', g ? fmtPct(g.right/g.n*100) : '',
+      g ? (r.modo==='modulo' ? (g.pass ? '70% ou mais' : 'Abaixo de 70%') : (g.pass ? 'Aprovado' : 'Reprovado')) : ''
+    ].concat(MODULES.map(function(m){ return g && perBy[m.id] ? perBy[m.id].right : ''; }))
      .concat([r.qs ? r.d.questoes.join(' ') : '',
              r.answers.map(function(a){ return a===null ? '-' : L[a]; }).join(''),
              r.qs ? r.qs.map(function(q){ return L[KEY[q.id]]; }).join('') : '']));
@@ -1439,7 +1707,13 @@ function exportCSV(){
 }
 
 /* ---------- Eventos ---------- */
-$('#btn-start').addEventListener('click', startStudent);
+$('#btn-start').addEventListener('click', function(){ startNew('completo'); });
+$('#btn-start-mod').addEventListener('click', function(){ startNew('modulo'); });
+$('#mod-pick').addEventListener('change', updateQty);
+$('#tab-new').addEventListener('click', function(){ selectTab('new'); });
+$('#tab-mine').addEventListener('click', function(){ selectTab('mine'); });
+$('#btn-pause').addEventListener('click', pauseStudent);
+$('#btn-sent-home').addEventListener('click', function(){ show('loading'); refreshMine().then(function(){ showHome('mine'); }, function(){ showHome('mine'); }); });
 $('#btn-next').addEventListener('click', next);
 $('#btn-prev').addEventListener('click', prev);
 $('#btn-flag').addEventListener('click', toggleFlag);
@@ -1450,7 +1724,7 @@ $('#btn-sheet-close').addEventListener('click', function(){ closeSheet(); $('#bt
 $('#btn-exit-preview').addEventListener('click', function(){ closeSheet(); examKind = null; S = null; backToDash(); });
 $('#btn-preview').addEventListener('click', startPreview);
 $('#btn-csv').addEventListener('click', exportCSV);
-Array.prototype.forEach.call(document.querySelectorAll('.js-back'), function(b){ b.addEventListener('click', backToDash); });
+Array.prototype.forEach.call(document.querySelectorAll('.js-back'), function(b){ b.addEventListener('click', function(){ if (R && R.kind==='mine') showHome('mine'); else backToDash(); }); });
 $('#mod-filter').addEventListener('change', function(e){ filter.mod = +e.target.value; renderFilters(); renderReview(); });
 
 document.addEventListener('keydown', function(e){
@@ -1462,7 +1736,7 @@ document.addEventListener('keydown', function(e){
   var k = e.key.length===1 ? e.key.toLowerCase() : e.key;
   var map = {a:0,b:1,c:2,d:3,'1':0,'2':1,'3':2,'4':3};
   if (map.hasOwnProperty(k)){ e.preventDefault(); choose(map[k]); return; }
-  if (k==='ArrowRight'){ e.preventDefault(); if (S.current<TOTAL-1) goTo(S.current+1); return; }
+  if (k==='ArrowRight'){ e.preventDefault(); if (S.current<S.n-1) goTo(S.current+1); return; }
   if (k==='ArrowLeft'){ e.preventDefault(); prev(); return; }
   if (k==='m'){ e.preventDefault(); toggleFlag(); return; }
   if (k==='Enter' && tag!=='BUTTON'){ e.preventDefault(); next(); }
@@ -1483,7 +1757,7 @@ var LS_PREFIX = 'simulado_ancord:';
 var lastSync = {}, profileCache = {};
 
 function lsGet(k){ try { return JSON.parse(localStorage.getItem(LS_PREFIX+k)); } catch(e){ return null; } }
-function lsSet(k,v){ try { localStorage.setItem(LS_PREFIX+k, JSON.stringify(v)); } catch(e){} }
+function lsSet(k,v){ try { if (v===null) localStorage.removeItem(LS_PREFIX+k); else localStorage.setItem(LS_PREFIX+k, JSON.stringify(v)); } catch(e){} }
 function snap(d){ return {exists: !!d, data: function(){ return d; }}; }
 function newer(a,b){
   if (!a) return b; if (!b) return a;
@@ -1511,6 +1785,7 @@ var dbShim = {
       set: function(body){
         if (col!=='envios') return Promise.reject({code:'unsupported'});
         var payload = {acao:'salvar', id:id, nome:me.nome, email:me.email, doc:body};
+        lsSet('atual:'+me.email, id);
         if (body.status==='enviado'){
           return serverCall(payload).then(function(){ lsSet('envio:'+id, body); }, function(e){
             if (e && e.code==='ja_enviado'){ lsSet('envio:'+id, body); return; }
@@ -1603,7 +1878,7 @@ $('#who-line').addEventListener('click', function(e){ if (e.target && e.target.i
 /* ---------- Inicialização ---------- */
 function boot(){
   buildStartTable();
-  buildSheet();
+  buildModulePicker();
   if (SERVER_URL.indexOf('https://')!==0){
     return notice('Falta configurar o servidor', '<p>Esta página ainda não está ligada ao Google Apps Script. Abra o arquivo HTML, procure a linha <strong>SERVER_URL</strong> e cole a URL da implantação.</p>');
   }
