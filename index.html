@@ -426,6 +426,13 @@ dialog::backdrop{background:rgba(14,18,30,.5)}
 table.students.mine{min-width:560px}
 table.mine td:first-child{white-space:nowrap}
 .st-type{display:block;font-size:13px;color:var(--ink-3)}
+.q-topnav{display:flex;justify-content:flex-end;gap:8px;margin:-6px 0 14px}
+.result-actions.top{margin:0 0 26px}
+.dash-tools{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 4px}
+.dash-tools .dt-search{flex:1 1 280px}
+.dash-tools input,.dash-tools select{width:100%;box-sizing:border-box;font:inherit;padding:10px 12px;border:1px solid var(--rule);border-radius:8px;background:var(--paper);color:var(--ink)}
+.dash-tools input:focus-visible,.dash-tools select:focus-visible{outline:3px solid var(--pen);outline-offset:1px}
+@media (max-width:1023.98px){ .q-topnav{display:none} }
 </style>
 </head>
 <body>
@@ -539,6 +546,10 @@ table.mine td:first-child{white-space:nowrap}
   </header>
   <div class="exam-layout">
     <main class="question sheet">
+      <nav class="q-topnav" aria-label="Navegação rápida">
+        <button id="btn-prev-top" class="btn small">‹ Anterior</button>
+        <button id="btn-next-top" class="btn small primary">Próxima ›</button>
+      </nav>
       <div class="q-head">
         <div class="q-num" aria-live="polite"><span class="sr-only">Questão </span><b id="q-num">1</b><span>de <span id="q-total">80</span></span></div>
         <div class="q-mod"><strong id="q-mod-label">Módulo 1</strong><span id="q-mod-name">AAI</span></div>
@@ -596,6 +607,16 @@ table.mine td:first-child{white-space:nowrap}
   <div class="dash-wrap">
     <main class="dash sheet">
       <h1>Resultados da turma</h1>
+      <div id="dash-top"></div>
+      <div id="dash-tools" class="dash-tools" hidden>
+        <label class="dt-search"><span class="sr-only">Buscar aluno</span><input id="dash-q" type="search" placeholder="Buscar aluno por nome ou e-mail" autocomplete="off"></label>
+        <label><span class="sr-only">Tipo de tentativa</span><select id="dash-type">
+          <option value="all">Todas as tentativas</option>
+          <option value="completo">Só provas completas</option>
+          <option value="modulo">Só treinos por módulo</option>
+          <option value="prog">Só em andamento</option>
+        </select></label>
+      </div>
       <div id="dash-body"><p class="dash-note">Carregando resultados…</p></div>
     </main>
   </div>
@@ -613,6 +634,7 @@ table.mine td:first-child{white-space:nowrap}
   </header>
   <div class="result-wrap">
     <main class="result sheet">
+      <div class="result-actions top" id="result-actions-top"></div>
       <div id="verdict" class="verdict">
         <p id="verdict-word" class="verdict-word"></p>
         <p id="verdict-line" class="verdict-line"></p>
@@ -962,6 +984,8 @@ function renderQuestion(){
     box.appendChild(b); optButtons.push(b);
   });
   $('#btn-prev').disabled = i===0;
+  $('#btn-prev-top').disabled = i===0;
+  $('#btn-next-top').textContent = i===S.n-1 ? (examKind==='student' ? 'Enviar ›' : 'Finalizar ›') : 'Próxima ›';
   $('#btn-next').textContent = i===S.n-1 ? (examKind==='student' ? 'Enviar simulado' : 'Finalizar teste') : 'Próxima';
   $('#btn-flag').setAttribute('aria-pressed', S.flags[i] ? 'true' : 'false');
   $('#btn-clear').disabled = S.answers[i]===null;
@@ -1055,7 +1079,7 @@ function enterExam(kind){
   buildSheet();
   $('#q-total').textContent = S.n; $('#answered-total').textContent = S.n;
   $('#btn-pause').hidden = kind!=='student';
-  $('#btn-finish').disabled = false; $('#btn-next').disabled = false;
+  $('#btn-finish').disabled = false; $('#btn-next').disabled = false; $('#btn-next-top').disabled = false;
   for (var i=0;i<S.n;i++) updateRow(i);
   updateCount();
   $('#save-state').hidden = kind!=='student';
@@ -1095,7 +1119,7 @@ function sendStudent(){
   clearTimeout(saveTimer); dirty = false;
   var body = docBody('enviado');
   setSaveStatus('pending');
-  $('#btn-finish').disabled = true; $('#btn-next').disabled = true;
+  $('#btn-finish').disabled = true; $('#btn-next').disabled = true; $('#btn-next-top').disabled = true;
   saving = saving.then(function(){ return writeDoc(body); });
   saving.then(function(){
     var aid = S.aid;
@@ -1107,7 +1131,7 @@ function sendStudent(){
     }, function(){ showSent(body); });
   }, function(){
     saving = Promise.resolve();
-    $('#btn-finish').disabled = false; $('#btn-next').disabled = false;
+    $('#btn-finish').disabled = false; $('#btn-next').disabled = false; $('#btn-next-top').disabled = false;
     setSaveStatus('error');
     ask({title:'As respostas não foram enviadas', html:'<p>Não foi possível falar com o servidor. Suas respostas continuam aqui; verifique a conexão e tente de novo.</p>', ok:'Tentar de novo', cancel:'Voltar à prova'}).then(function(ok){ if (ok) sendStudent(); });
   });
@@ -1159,8 +1183,15 @@ function refreshMine(){
   });
 }
 function loadStudent(){
-  refreshMine().then(function(){ showHome('new'); }, function(){
-    notice('O simulado não carregou', '<p>O servidor não respondeu a tempo. Verifique sua conexão e abra o link de novo.</p>');
+  refreshMine().then(function(){ showHome('new'); }, function(e){
+    var code = e && e.code;
+    if (code==='acao_desconhecida'){
+      notice('O servidor está desatualizado', '<p>Esta página é a versão 2 do simulado, mas o servidor (Google Apps Script) ainda roda a versão anterior.</p><p>Quem administra o simulado precisa colar o Codigo.gs novo no Apps Script e publicar uma <strong>nova versão</strong> da implantação.</p>');
+    } else if (code==='timeout' || !code || code==='servidor'){
+      notice('O simulado não carregou', '<p>O servidor não respondeu. Verifique sua conexão e abra o link de novo.</p>');
+    } else {
+      notice('O simulado não carregou', '<p>O servidor recusou o pedido (código: '+esc(code)+'). Confira o e-mail informado e tente de novo.</p>');
+    }
   });
 }
 function selectTab(t){
@@ -1407,6 +1438,7 @@ function openResult(ctx, animate){
     back2.className = 'btn primary'; back2.textContent = 'Voltar aos meus resultados';
     back2.addEventListener('click', function(){ showHome('mine'); });
     acts.appendChild(back2);
+    syncTopActions();
     show('result');
     return;
   }
@@ -1425,8 +1457,17 @@ function openResult(ctx, animate){
   back.className = 'btn primary'; back.textContent = 'Voltar ao painel';
   back.addEventListener('click', backToDash);
   acts.appendChild(back);
-
+  syncTopActions();
   show('result');
+}
+/* Repete os botões de ação no topo do resultado, para não precisar rolar até o fim. */
+function syncTopActions(){
+  var top = $('#result-actions-top'); top.innerHTML = '';
+  Array.prototype.forEach.call($('#result-actions').children, function(b){
+    var c = b.cloneNode(true);
+    c.addEventListener('click', function(){ b.click(); });
+    top.appendChild(c);
+  });
 }
 
 var KINDS = [
@@ -1545,7 +1586,10 @@ function renderDash(){
     drawDash();
   });
 }
+var DASH_PAGE = 20, dashLimit = DASH_PAGE;
+function normTxt(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim(); }
 function drawDash(){
+  var topHtml = '';
   $('#btn-preview').disabled = keyState!=='ok';
   $('#btn-csv').disabled = keyState!=='ok' || !enviosReady || !Object.keys(envios).length;
   if (!enviosReady && keyState==='loading'){ $('#dash-body').innerHTML = '<p class="dash-note">Carregando resultados…</p>'; return; }
@@ -1589,9 +1633,19 @@ function drawDash(){
     h += '<p class="dash-sum">'+s+'</p>';
     h += '<p class="dash-note">Só quem tem o link do painel vê esta página e o gabarito completo. Cada aluno pode fazer quantas provas quiser; cada tentativa aparece numa linha. Ao enviar, o aluno vê o próprio resultado e a correção das questões que recebeu.</p>';
     if (dashNote) h += '<p class="banner">'+esc(dashNote)+'</p>';
-
-    h += '<h2>Tentativas</h2><div class="table-wrap"><table class="students"><thead><tr><th>Aluno</th><th>Tipo</th><th>Situação</th><th class="num">Acertos</th><th class="num">%</th><th>Resultado</th><th class="num">Duração</th><th class="num">Data</th></tr></thead><tbody>';
+    topHtml = h; h = '';
+    var qv = normTxt($('#dash-q').value), tf = $('#dash-type').value, shown = [];
     list.forEach(function(r, i){
+      if (tf==='prog' ? r.sent : (tf!=='all' && (!r.sent || r.modo!==tf))) return;
+      if (qv && normTxt(r.name+' '+r.email).indexOf(qv)<0) return;
+      shown.push(i);
+    });
+    var lim = Math.min(dashLimit, shown.length);
+    h += '<h2>Tentativas</h2>';
+    h += '<p class="dash-note">'+(shown.length ? 'Mostrando <strong>'+lim+'</strong> de <strong>'+shown.length+'</strong> '+(shown.length===1?'tentativa':'tentativas')+(qv || tf!=='all' ? ' encontradas' : '')+', das mais recentes para as mais antigas.' : 'Nenhuma tentativa encontrada com essa busca.')+'</p>';
+    if (shown.length) h += '<div class="table-wrap"><table class="students"><thead><tr><th>Aluno</th><th>Tipo</th><th>Situação</th><th class="num">Acertos</th><th class="num">%</th><th>Resultado</th><th class="num">Duração</th><th class="num">Data</th></tr></thead><tbody>';
+    shown.slice(0, lim).forEach(function(i){
+      var r = list[i];
       var nm = r.name || 'Pessoa sem nome visível';
       var nameCell = r.sent && r.g
         ? '<button type="button" class="linkbtn" data-i="'+i+'">'+esc(nm)+'</button>'
@@ -1616,8 +1670,8 @@ function drawDash(){
           '<td class="num">início '+esc(fmtShort(r.d.inicio))+'</td></tr>';
       }
     });
-    h += '</tbody></table></div>';
-
+    if (shown.length) h += '</tbody></table></div>';
+    if (shown.length > lim) h += '<div class="start-actions"><button type="button" class="btn" id="btn-more">Mostrar mais '+Math.min(DASH_PAGE, shown.length-lim)+' (faltam '+(shown.length-lim)+')</button></div>';
     var graded = sent.filter(function(r){ return r.g; });
     if (graded.length){
       var agg = {};
@@ -1645,7 +1699,11 @@ function drawDash(){
       }
     }
   }
+  $('#dash-top').innerHTML = topHtml;
+  $('#dash-tools').hidden = !list.length;
   $('#dash-body').innerHTML = h;
+  var more = $('#btn-more');
+  if (more) more.addEventListener('click', function(){ dashLimit += DASH_PAGE; drawDash(); });
   Array.prototype.forEach.call(document.querySelectorAll('#dash-body tr.clickable'), function(tr){
     tr.addEventListener('click', function(){ openDetail(+tr.getAttribute('data-i')); });
   });
@@ -1716,6 +1774,8 @@ $('#btn-pause').addEventListener('click', pauseStudent);
 $('#btn-sent-home').addEventListener('click', function(){ show('loading'); refreshMine().then(function(){ showHome('mine'); }, function(){ showHome('mine'); }); });
 $('#btn-next').addEventListener('click', next);
 $('#btn-prev').addEventListener('click', prev);
+$('#btn-next-top').addEventListener('click', next);
+$('#btn-prev-top').addEventListener('click', prev);
 $('#btn-flag').addEventListener('click', toggleFlag);
 $('#btn-clear').addEventListener('click', clearAnswer);
 $('#btn-finish').addEventListener('click', finish);
@@ -1723,6 +1783,8 @@ $('#btn-sheet').addEventListener('click', openSheet);
 $('#btn-sheet-close').addEventListener('click', function(){ closeSheet(); $('#btn-sheet').focus(); });
 $('#btn-exit-preview').addEventListener('click', function(){ closeSheet(); examKind = null; S = null; backToDash(); });
 $('#btn-preview').addEventListener('click', startPreview);
+$('#dash-q').addEventListener('input', function(){ dashLimit = DASH_PAGE; drawDash(); });
+$('#dash-type').addEventListener('change', function(){ dashLimit = DASH_PAGE; drawDash(); });
 $('#btn-csv').addEventListener('click', exportCSV);
 Array.prototype.forEach.call(document.querySelectorAll('.js-back'), function(b){ b.addEventListener('click', function(){ if (R && R.kind==='mine') showHome('mine'); else backToDash(); }); });
 $('#mod-filter').addEventListener('change', function(e){ filter.mod = +e.target.value; renderFilters(); renderReview(); });
@@ -1750,7 +1812,7 @@ window.addEventListener('pagehide', function(){ if (examKind==='student' && dirt
 
 /* ---------- Servidor externo (Google Apps Script) ---------- */
 /* Cole aqui a URL da implantação do Apps Script (termina em /exec). */
-var SERVER_URL = 'https://script.google.com/macros/s/AKfycbzAfmHJCI53_PWjNmxQuBTwlzjUi2d_ebY3-KQcVZnLnPF2R_YCFjymJz9McMRRyf4v/exec';
+var SERVER_URL = 'https://script.google.com/macros/s/AKfycbzN7Zpr9eRE-Imw-gr2vKXFjt-9te5MqRhM4b3kKS_Z3iiW0xQVKX5cK_dsgAwxECBxpw/exec';
 
 var PAINEL_KEY = (function(){ try { return new URLSearchParams(location.search).get('painel') || ''; } catch(e){ return ''; } })();
 var LS_PREFIX = 'simulado_ancord:';
