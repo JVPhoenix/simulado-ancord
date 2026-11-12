@@ -433,6 +433,77 @@ table.mine td:first-child{white-space:nowrap}
 .dash-tools input,.dash-tools select{width:100%;box-sizing:border-box;font:inherit;padding:10px 12px;border:1px solid var(--rule);border-radius:8px;background:var(--paper);color:var(--ink)}
 .dash-tools input:focus-visible,.dash-tools select:focus-visible{outline:3px solid var(--pen);outline-offset:1px}
 @media (max-width:1023.98px){ .q-topnav{display:none} }
+
+/* ---- Calculadora financeira ---- */
+#btn-calc{display:inline-flex;align-items:center;gap:6px}
+#btn-calc svg{width:16px;height:16px;flex:none}
+#btn-calc[aria-pressed="true"]{border-color:var(--pen);background:var(--pen-tint);color:var(--pen)}
+.calc{background:var(--paper);border:1px solid var(--rule);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;font-family:var(--sans);color:var(--ink);box-sizing:border-box}
+.calc[hidden]{display:none!important}
+.calc:focus{outline:none}
+.calc-grip{width:40px;height:5px;border-radius:3px;background:var(--rule);align-self:center;margin-top:-4px}
+.calc-head{display:flex;align-items:center;gap:6px}
+.calc-head h2{font-family:var(--sans);font-size:15px;font-weight:650;margin:0;flex:1}
+.calc-chip{height:30px;padding:0 10px;border-radius:15px;border:1px solid var(--rule);background:var(--paper);color:var(--ink-2);font:600 12px var(--sans);cursor:pointer}
+.calc-chip[aria-pressed="true"]{border-color:var(--pen-line);background:var(--pen-tint);color:var(--pen)}
+.calc-x{width:32px;height:32px;border-radius:8px;border:1px solid var(--rule);background:var(--paper);color:var(--ink-2);display:grid;place-items:center;padding:0;cursor:pointer}
+.calc-x svg{width:14px;height:14px}
+.calc-screen{background:var(--pen-tint);border:1px solid var(--pen-line);border-radius:12px;padding:8px 12px 10px}
+.calc-ind{display:flex;gap:6px;align-items:center;min-height:20px;font:650 11px var(--sans);color:var(--ink-2)}
+.calc-ind span{padding:1px 7px;border-radius:4px;border:1px solid var(--pen-line)}
+.calc-ind .on-f{background:var(--form);border-color:var(--form);color:var(--on-solid)}
+.calc-ind .on-g{background:var(--pen);border-color:var(--pen);color:var(--on-solid)}
+.calc-ind .on-pend{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.calc-ind i{flex:1}
+.calc-ind em{font-style:normal}
+.calc-disp{display:block;text-align:right;font-family:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,"Liberation Mono",monospace;font-size:30px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.25;min-height:1.25em;overflow-wrap:anywhere}
+.calc-disp.err{color:var(--bad)}
+.calc-regs,.calc-stack{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:4px 8px;border-top:1px solid var(--pen-line);padding-top:6px;margin-top:4px}
+.calc-stack{grid-template-columns:repeat(auto-fill,minmax(80px,1fr))}
+.calc-regs[hidden],.calc-stack[hidden]{display:none}
+.calc-reg{min-width:0}
+.calc-reg span{display:block}
+.calc-reg span:first-child{font:650 10px var(--sans);color:var(--ink-2)}
+.calc-reg span:last-child{font:500 11px ui-monospace,Menlo,Consolas,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.calc-hist{display:flex;align-items:flex-start;gap:6px;font:500 11.5px ui-monospace,Menlo,Consolas,monospace;color:var(--ink-2)}
+.calc-hist-list{flex:1;display:flex;flex-wrap:wrap;gap:4px;min-height:20px}
+.calc-hist .tok{padding:1px 6px;border-radius:4px;background:var(--muted-tint);color:var(--ink)}
+.calc-hist-empty{font-family:var(--sans);font-size:12px;color:var(--ink-3)}
+.calc-hist .linkbtn{font:600 12px var(--sans)}
+.calc-sec h3{margin:0 0 5px;font:650 10.5px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+.calc-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+#calc-keys{display:flex;flex-direction:column;gap:10px}
+.ck{min-height:46px;padding:4px 2px;border-radius:10px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;font-family:var(--sans);touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.ck:active{transform:translateY(1px)}
+.ck-main{font-size:15px;font-weight:650;line-height:1.1}
+.ck.num .ck-main{font-size:18px;font-weight:600}
+.ck-sub{display:flex;gap:5px;min-height:12px;font:650 9.5px var(--sans);line-height:1.2}
+.kf{color:var(--form)}
+.kg{color:var(--pen)}
+.ck.key-f{background:var(--form);border-color:var(--form);color:var(--on-solid)}
+.ck.key-g{background:var(--pen);border-color:var(--pen);color:var(--on-solid)}
+.ck-enter{width:100%;min-height:46px;border:0;border-radius:10px;background:var(--ink);color:var(--paper);font:700 15px var(--sans);letter-spacing:.04em;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;touch-action:manipulation}
+.ck-enter .kg{color:var(--pen-line);font-size:10px}
+#calc.pre-f .ck:not(.has-f):not(.key-f),#calc.pre-f .ck-enter{opacity:.35}
+#calc.pre-f .ck.has-f{border:2px solid var(--form);background:var(--form-tint)}
+#calc.pre-f .ck.key-f{box-shadow:0 0 0 3px var(--form-line)}
+#calc.pre-g .ck:not(.has-g):not(.key-g){opacity:.35}
+#calc.pre-g .ck.has-g{border:2px solid var(--pen);background:var(--pen-tint)}
+#calc.pre-g .ck.key-g{box-shadow:0 0 0 3px var(--pen-line)}
+#calc.pre-g .ck-enter{box-shadow:0 0 0 3px var(--pen-line)}
+.ck:focus-visible,.ck-enter:focus-visible,.calc-chip:focus-visible,.calc-x:focus-visible{outline:3px solid var(--pen);outline-offset:2px}
+@media (min-width:1024px){
+  body.calc-open .exam-layout{grid-template-columns:minmax(0,1fr) 380px;max-width:1240px}
+  body.calc-open .answer-sheet{display:none}
+  .calc{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--topbar-h) + 24px);max-height:calc(100vh - var(--topbar-h) - 48px - env(safe-area-inset-top,0px));overflow:auto}
+  .calc-grip{display:none}
+}
+@media (max-width:1023.98px){
+  .calc{position:fixed;left:0;right:0;bottom:0;z-index:45;border-radius:16px 16px 0 0;border-bottom:0;max-height:min(80vh,760px);overflow:auto;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));box-shadow:var(--shadow)}
+  body.calc-open .exam-layout{padding-bottom:min(82vh,780px)}
+  .calc-disp{font-size:26px}
+  .ck,.ck-enter{min-height:44px}
+}
 </style>
 </head>
 <body>
@@ -515,6 +586,7 @@ table.mine td:first-child{white-space:nowrap}
             <button id="btn-start-mod" class="btn primary">Começar treino</button>
           </div>
         </section>
+        <p class="hint">Durante a prova, o botão <strong>Calculadora</strong> abre uma calculadora financeira RPN com as mesmas teclas e funções da usada na prova. Com ela aberta, o teclado do computador digita na calculadora (números, <kbd>Enter</kbd>, <kbd>+</kbd> <kbd>−</kbd> <kbd>*</kbd> <kbd>/</kbd>, <kbd>F</kbd> e <kbd>G</kbd>).</p>
         <p class="hint">Atalhos de teclado: <kbd>A</kbd> a <kbd>D</kbd> marcam a alternativa, <kbd>←</kbd> <kbd>→</kbd> trocam de questão, <kbd>M</kbd> marca para revisar.</p>
       </div>
 
@@ -539,6 +611,7 @@ table.mine td:first-child{white-space:nowrap}
       <div class="top-actions">
         <button id="btn-exit-preview" class="btn small ghost" hidden>Sair do teste</button>
         <button id="btn-pause" class="btn small ghost" hidden>Pausar</button>
+        <button id="btn-calc" class="btn small" aria-controls="calc" aria-pressed="false" aria-label="Calculadora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h2M12 11h2M8 15h2M12 15h2M8 18h2M12 18h2M16 14v4"/></svg><span class="lbl-wide">Calculadora</span></button>
         <button id="btn-sheet" class="btn small only-narrow" aria-controls="sheet" aria-expanded="false">Cartão</button>
         <button id="btn-finish" class="btn small">Finalizar</button>
       </div>
@@ -573,6 +646,23 @@ table.mine td:first-child{white-space:nowrap}
       </div>
       <div class="legend"><span><i></i>respondida</span><span><i class="lg-flag"></i>revisar</span><span><i class="lg-cur"></i>atual</span></div>
       <div id="sheet-rows" class="sheet-rows"></div>
+    </aside>
+    <aside id="calc" class="calc" aria-label="Calculadora financeira" tabindex="-1" hidden>
+      <div class="calc-grip" aria-hidden="true"></div>
+      <div class="calc-head">
+        <h2>Calculadora</h2>
+        <button type="button" id="calc-btn-regs" class="calc-chip" aria-pressed="true">Registradores</button>
+        <button type="button" id="calc-btn-stack" class="calc-chip" aria-pressed="false">Pilha</button>
+        <button type="button" id="calc-close" class="calc-x" aria-label="Fechar calculadora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      </div>
+      <div class="calc-screen">
+        <div id="calc-ind" class="calc-ind"></div>
+        <output id="calc-disp" class="calc-disp" aria-live="polite">0,00</output>
+        <div id="calc-regs" class="calc-regs"></div>
+        <div id="calc-stack" class="calc-stack" hidden></div>
+      </div>
+      <div class="calc-hist"><div id="calc-hist-list" class="calc-hist-list"></div><button type="button" id="calc-hist-clear" class="linkbtn">Limpar</button></div>
+      <div id="calc-keys"></div>
     </aside>
   </div>
 </section>
@@ -830,6 +920,7 @@ function keyAt(i){ return KEY[QUESTIONS[i].id]; }
 var screen = 'loading';
 var SCREENS = ['loading','notice','ident','start','exam','sent','dash','result'];
 function show(name){
+  if (name!=='exam') closeCalc();
   screen = name;
   SCREENS.forEach(function(n){ document.getElementById('screen-'+n).hidden = (n!==name); });
   window.scrollTo(0,0);
@@ -1781,6 +1872,11 @@ $('#mod-pick').addEventListener('change', updateQty);
 $('#tab-new').addEventListener('click', function(){ selectTab('new'); });
 $('#tab-mine').addEventListener('click', function(){ selectTab('mine'); });
 $('#btn-pause').addEventListener('click', pauseStudent);
+$('#btn-calc').addEventListener('click', function(){ if (calcOpen) closeCalc(); else openCalc(); });
+$('#calc-close').addEventListener('click', function(){ closeCalc(); $('#btn-calc').focus(); });
+$('#calc-btn-regs').addEventListener('click', function(){ calcView.regs = !calcView.regs; renderCalc(); });
+$('#calc-btn-stack').addEventListener('click', function(){ calcView.stack = !calcView.stack; renderCalc(); });
+$('#calc-hist-clear').addEventListener('click', function(){ calcHist = []; calcHistNum = false; renderCalc(); });
 $('#btn-sent-home').addEventListener('click', function(){ show('loading'); refreshMine().then(function(){ showHome('mine'); }, function(){ showHome('mine'); }); });
 $('#btn-next').addEventListener('click', next);
 $('#btn-prev').addEventListener('click', prev);
@@ -1805,6 +1901,16 @@ document.addEventListener('keydown', function(e){
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   var tag = e.target.tagName;
   if (tag==='INPUT' || tag==='SELECT' || tag==='TEXTAREA') return;
+  if (calcOpen){
+    var ck = calcKeyFor(e);
+    if (ck && !(ck==='ENTER' && tag==='BUTTON' && e.target.closest('.question, .answer-sheet'))){
+      e.preventDefault();
+      if (ck==='close'){ closeCalc(); $('#btn-calc').focus(); }
+      else if (ck==='bs') calcBackspace();
+      else calcPress(ck);
+      return;
+    }
+  }
   var k = e.key.length===1 ? e.key.toLowerCase() : e.key;
   var map = {a:0,b:1,c:2,d:3,'1':0,'2':1,'3':2,'4':3};
   if (map.hasOwnProperty(k)){ e.preventDefault(); choose(map[k]); return; }
@@ -1820,9 +1926,501 @@ setInterval(function(){
 document.addEventListener('visibilitychange', function(){ if (document.hidden && examKind==='student' && dirty) flush(); });
 window.addEventListener('pagehide', function(){ if (examKind==='student' && dirty) flush(); });
 
+/* ---------- Calculadora financeira (RPN) ----------
+   Motor puro, sem DOM. Mesmas teclas, segundas funções (f/g) e sequências de uma calculadora financeira RPN padrão. */
+function CalcEngine(){
+  var C = this;
+  C.reset = function(){
+    C.x = 0; C.y = 0; C.z = 0; C.t = 0; C.last = 0;
+    C.entry = null; C.lift = true; C.prefix = null; C.pend = null;
+    C.reg = []; for (var i=0;i<20;i++) C.reg.push(0);
+    C.nj = []; for (var j=0;j<20;j++) C.nj.push(1);
+    C.fin = {n:0, i:0, PV:0, PMT:0, FV:0};
+    C.lastFin = false; C.err = null; C.override = null;
+  };
+  C.beg = false; C.dmy = true; C.fix = 2;
+  C.reset();
+
+  function E(code){ var e = new Error('Error '+code); e.calcCode = code; return e; }
+  function ok(v, code){ if (typeof v!=='number' || !isFinite(v) || isNaN(v)) throw E(code||0); if (Math.abs(v)>9.999999999e99) throw E(0); return v; }
+  function push(){ C.t = C.z; C.z = C.y; C.y = C.x; }
+  function finish(){ if (C.entry){ C.entry = null; C.lift = true; } }
+  function pushValue(v){ finish(); if (C.lift) push(); C.x = v; C.lift = true; }
+  function roundFix(v){ var p = Math.pow(10, C.fix); return Math.round(v*p)/p; }
+
+  /* ----- digitação ----- */
+  function entryValue(e){
+    var s = (e.neg?'-':'') + (e.int||'0') + '.' + (e.frac||'0') + 'e' + (e.expNeg?'-':'') + (e.exp||'0');
+    return Number(s);
+  }
+  function startEntry(){
+    if (!C.entry){
+      if (C.lift) push();
+      C.entry = {int:'', frac:null, neg:false, exp:null, expNeg:false};
+      C.lift = true;
+    }
+  }
+  function digit(d){
+    startEntry();
+    var e = C.entry;
+    if (e.exp!==null){ e.exp = (e.exp + d).slice(-2); }
+    else if (e.frac!==null){ if ((e.int.length + e.frac.length) < 10) e.frac += d; }
+    else { if (e.int==='0') e.int = ''; if (e.int.length < 10) e.int += d; }
+    C.x = entryValue(e);
+  }
+  function dot(){ startEntry(); var e = C.entry; if (e.exp===null && e.frac===null){ if (!e.int) e.int = '0'; e.frac = ''; } C.x = entryValue(e); }
+  function eex(){ startEntry(); var e = C.entry; if (!e.int && !e.frac) e.int = '1'; if (e.exp===null) e.exp = ''; C.x = entryValue(e); }
+  function chs(){
+    if (C.entry){ var e = C.entry; if (e.exp!==null) e.expNeg = !e.expNeg; else e.neg = !e.neg; C.x = entryValue(e); }
+    else { C.x = -C.x; }
+  }
+  C.backspace = function(){
+    if (C.err){ C.err = null; return; }
+    if (!C.entry){ C.x = 0; C.lift = false; return; }
+    var e = C.entry;
+    if (e.exp!==null){ if (e.exp.length) e.exp = e.exp.slice(0,-1); else { e.exp = null; e.expNeg = false; } }
+    else if (e.frac!==null){ if (e.frac.length) e.frac = e.frac.slice(0,-1); else e.frac = null; }
+    else e.int = e.int.slice(0,-1);
+    if (!e.int && e.frac===null && e.exp===null){ C.entry = null; C.x = 0; C.lift = false; return; }
+    C.x = entryValue(e);
+  };
+
+  /* ----- operações ----- */
+  function binary(fn){ finish(); var r = ok(fn(C.y, C.x)); C.last = C.x; C.x = r; C.y = C.z; C.z = C.t; C.lift = true; }
+  function unary(fn){ finish(); var r = ok(fn(C.x)); C.last = C.x; C.x = r; C.lift = true; }
+  function keepY(fn){ finish(); var r = ok(fn(C.y, C.x)); C.last = C.x; C.x = r; C.lift = true; }
+
+  /* ----- valor do dinheiro no tempo ----- */
+  function tvm(r, n, pv, pmt, fv){
+    var b = C.beg ? 1 : 0;
+    if (Math.abs(r) < 1e-12) return pv + pmt*n + fv;
+    var q = Math.pow(1+r, n);
+    return pv*q + pmt*(1+r*b)*(q-1)/r + fv;
+  }
+  function solve(k){
+    var f = C.fin, r = f.i/100, b = C.beg ? 1 : 0, q, v;
+    if (k==='FV'){ if (Math.abs(r)<1e-12) v = -(f.PV + f.PMT*f.n); else { q = Math.pow(1+r, f.n); v = -(f.PV*q + f.PMT*(1+r*b)*(q-1)/r); } }
+    else if (k==='PV'){ if (Math.abs(r)<1e-12) v = -(f.FV + f.PMT*f.n); else { q = Math.pow(1+r, f.n); v = -(f.FV + f.PMT*(1+r*b)*(q-1)/r)/q; } }
+    else if (k==='PMT'){
+      if (Math.abs(r)<1e-12){ if (!f.n) throw E(5); v = -(f.PV + f.FV)/f.n; }
+      else { q = Math.pow(1+r, f.n); var den = (1+r*b)*(q-1)/r; if (!den) throw E(5); v = -(f.PV*q + f.FV)/den; }
+    }
+    else if (k==='n'){
+      if (Math.abs(r)<1e-12){ if (!f.PMT) throw E(5); v = -(f.PV + f.FV)/f.PMT; }
+      else {
+        var A = f.PMT*(1+r*b)/r, num = A - f.FV, dd = f.PV + A;
+        if (!dd || num/dd <= 0) throw E(5);
+        v = Math.log(num/dd)/Math.log(1+r);
+      }
+      if (!(v > 0)) throw E(5);
+      v = Math.abs(v - Math.round(v)) < 1e-6 ? Math.round(v) : Math.ceil(v);
+    }
+    else if (k==='i'){
+      if (!(f.n > 0)) throw E(5);
+      var g = function(x){ return tvm(x, f.n, f.PV, f.PMT, f.FV); };
+      var root = findRoot(g, 0.01);
+      if (root===null) throw E(5);
+      v = root*100;
+    }
+    return ok(v, 5);
+  }
+  /* Raiz de uma função em (-1, 10]: Newton a partir de x0 e, se falhar, busca de troca de sinal + bisseção. */
+  function findRoot(g, x0){
+    var x = x0;
+    for (var it=0; it<100; it++){
+      var fx = g(x), h = Math.max(1e-7, Math.abs(x)*1e-6), d = (g(x+h) - fx)/h;
+      if (!isFinite(fx) || !isFinite(d) || d===0) break;
+      var nx = x - fx/d;
+      if (!(nx > -0.999999) || nx > 100) break;
+      if (Math.abs(nx - x) < 1e-13) return nx;
+      x = nx;
+    }
+    if (isFinite(g(x)) && Math.abs(g(x)) < 1e-9 && x > -0.999999) return x;
+    var pts = [-0.99, -0.9, -0.5, -0.2, -0.1, -0.05, -0.01, 0, 1e-6, 0.001, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10];
+    var prev = pts[0], fp = g(prev);
+    for (var i=1; i<pts.length; i++){
+      var cur = pts[i], fc = g(cur);
+      if (isFinite(fp) && isFinite(fc) && fp*fc <= 0){
+        var lo = prev, hi = cur, flo = fp;
+        for (var k=0; k<200; k++){
+          var mid = (lo+hi)/2, fm = g(mid);
+          if (flo*fm <= 0) hi = mid; else { lo = mid; flo = fm; }
+        }
+        return (lo+hi)/2;
+      }
+      prev = cur; fp = fc;
+    }
+    return null;
+  }
+  function npv(r){
+    var n = Math.round(C.fin.n), s = C.reg[0], t = 0;
+    for (var j=1; j<=n; j++){ for (var k=0; k<C.nj[j]; k++){ t++; s += C.reg[j]/Math.pow(1+r, t); } }
+    return s;
+  }
+
+  /* ----- datas ----- */
+  function parseDate(v){
+    var s = Math.abs(v).toFixed(6), p = s.split('.'), a = +p[0], b = p[1];
+    var d, m, y;
+    if (C.dmy){ d = a; m = +b.slice(0,2); y = +b.slice(2,6); } else { m = a; d = +b.slice(0,2); y = +b.slice(2,6); }
+    var dt = new Date(Date.UTC(y, m-1, d));
+    if (y < 1582 || y > 4046 || dt.getUTCDate()!==d || dt.getUTCMonth()!==m-1) throw E(8);
+    return {d:d, m:m, y:y, ms:dt.getTime()};
+  }
+  function encodeDate(ms){
+    var dt = new Date(ms), d = dt.getUTCDate(), m = dt.getUTCMonth()+1, y = dt.getUTCFullYear();
+    if (y < 1582 || y > 4046) throw E(8);
+    var v = C.dmy ? d + m/100 + y/1e6 : m + d/100 + y/1e6;
+    return {v: Number(v.toFixed(6)), d:d, m:m, y:y, wd: (dt.getUTCDay()||7)};
+  }
+
+  /* ----- estatística ----- */
+  function stats(){
+    var n = C.reg[1], sx = C.reg[2], sx2 = C.reg[3], sy = C.reg[4], sy2 = C.reg[5], sxy = C.reg[6];
+    return {n:n, sx:sx, sx2:sx2, sy:sy, sy2:sy2, sxy:sxy};
+  }
+  function regr(){
+    var s = stats(), dx = s.n*s.sx2 - s.sx*s.sx, dy = s.n*s.sy2 - s.sy*s.sy;
+    if (s.n < 2 || !dx) throw E(2);
+    var B = (s.n*s.sxy - s.sx*s.sy)/dx, A = (s.sy - B*s.sx)/s.n;
+    var r = dy ? (s.n*s.sxy - s.sx*s.sy)/Math.sqrt(dx*dy) : 0;
+    return {A:A, B:B, r:r};
+  }
+
+  /* ----- títulos (PRICE / YTM), base actual/actual, cupom semestral ----- */
+  function addMonths(o, k){ var y = o.y, m = o.m - 1 + k; y += Math.floor(m/12); m = ((m%12)+12)%12; var last = new Date(Date.UTC(y, m+1, 0)).getUTCDate(); return {y:y, m:m+1, d:Math.min(o.d, last), ms: Date.UTC(y, m, Math.min(o.d, last))}; }
+  function bondParts(settle, mat){
+    if (mat.ms <= settle.ms) throw E(8);
+    var N = 0, next = mat, k = 0, prev;
+    while (true){ prev = addMonths(mat, -6*(k+1)); if (prev.ms <= settle.ms) break; k++; next = prev; }
+    N = k + 1;
+    var E2 = (next.ms - prev.ms)/864e5, DSC = (next.ms - settle.ms)/864e5, A = E2 - DSC;
+    return {N:N, E:E2, DSC:DSC, A:A};
+  }
+  function price(y, R, bp){
+    var Y = y/200, c = R/2, N = bp.N, E = bp.E, DSC = bp.DSC, A = bp.A;
+    if (N===1) return (100 + c)/(1 + (DSC/E)*Y) - (A/E)*c;
+    var p = 100/Math.pow(1+Y, N-1+DSC/E);
+    for (var k=1; k<=N; k++) p += c/Math.pow(1+Y, k-1+DSC/E);
+    return p - (A/E)*c;
+  }
+
+  /* ----- execução ----- */
+  var DIG = {'0':1,'1':1,'2':1,'3':1,'4':1,'5':1,'6':1,'7':1,'8':1,'9':1};
+  var FIN = {n:1, i:1, PV:1, PMT:1, FV:1};
+  function pending(k){
+    var p = C.pend;
+    if (p.op===undefined && (k==='add'||k==='sub'||k==='mul'||k==='div') && p.kind==='STO'){ p.op = k; return; }
+    if (k==='dot' && !p.dot){ p.dot = true; return; }
+    C.pend = null;
+    if (DIG[k]){
+      var idx = (p.dot ? 10 : 0) + Number(k);
+      finish();
+      if (p.kind==='STO'){
+        var v = C.reg[idx], x = C.x;
+        C.reg[idx] = p.op==='add' ? v+x : p.op==='sub' ? v-x : p.op==='mul' ? v*x : p.op==='div' ? (x===0 ? (function(){ throw E(0); })() : v/x) : x;
+        ok(C.reg[idx]); C.lift = true;
+      } else pushValue(C.reg[idx]);
+      return;
+    }
+    if (FIN[k] && !p.dot && !p.op){
+      if (p.kind==='STO'){ finish(); C.fin[k] = C.x; C.lift = true; C.lastFin = true; }
+      else pushValue(C.fin[k]);
+      return;
+    }
+    /* tecla inválida após STO/RCL: cancela */
+  }
+  function exec(k, pre, wasFin){
+    if (pre==='f'){
+      if (DIG[k]){ finish(); C.fix = Number(k); return; }
+      switch (k){
+        case 'n': { finish(); var p = Math.round(C.x); if (p<=0) throw E(5);
+          var r = C.fin.i/100, pv = C.fin.PV, pmt = C.fin.PMT, ti = 0, tp = 0;
+          for (var j=0; j<p; j++){
+            var it = (C.beg && C.fin.n===0 && j===0) ? 0 : roundFix(-pv*r);
+            var pr = roundFix(pmt - it); ti += it; tp += pr; pv = roundFix(pv + pr);
+          }
+          C.last = C.x; C.t = C.z; C.z = p; C.y = roundFix(tp); C.x = roundFix(ti); C.fin.PV = pv; C.fin.n += p; C.lift = true; return; }
+        case 'i': { finish(); var base = -C.fin.PV*C.fin.i/100*C.fin.n;
+          C.t = C.y; C.z = base/365; C.y = -C.fin.PV; C.x = base/360; C.lift = true; return; }
+        case 'PV': { finish(); var v = ok(npv(C.fin.i/100)); C.fin.PV = v; pushValue(v); return; }
+        case 'FV': { finish(); var root = findRoot(npv, 0.1); if (root===null) throw E(3); C.fin.i = root*100; pushValue(C.fin.i); return; }
+        case 'PMT': unary(function(x){ return roundFix(x); }); return;
+        case 'yx': { finish(); var st = parseDate(C.y), mt = parseDate(C.x), bp = bondParts(st, mt);
+          var pr2 = price(C.fin.i, C.fin.PMT, bp), ai = (bp.A/bp.E)*C.fin.PMT/2;
+          C.last = C.x; C.y = ai; C.x = pr2; C.lift = true; return; }
+        case 'inv': { finish(); var st2 = parseDate(C.y), mt2 = parseDate(C.x), bp2 = bondParts(st2, mt2);
+          var target = C.fin.PV;
+          var y = findRoot(function(rr){ return price(rr*100, C.fin.PMT, bp2) - target; }, 0.05);
+          if (y===null) throw E(5);
+          C.last = C.x; C.y = (bp2.A/bp2.E)*C.fin.PMT/2; C.x = y*100; C.lift = true; return; }
+        case 'pctT': case 'dpct': case 'pct': { finish(); var jj = C.x, L = C.fin.n, cost = C.fin.PV, sal = C.fin.FV;
+          if (!(jj>0) || jj!==Math.round(jj) || !(L>0)) throw E(5);
+          var dep = 0, rem = 0;
+          if (k==='pctT'){ dep = jj<=L ? (cost-sal)/L : 0; rem = Math.max(0, (cost-sal) - Math.min(jj,L)*(cost-sal)/L); }
+          else if (k==='dpct'){ var sum = L*(L+1)/2, acc = 0; for (var q=1; q<=Math.min(jj,L); q++){ dep = (cost-sal)*(L-q+1)/sum; acc += dep; } if (jj>L) dep = 0; rem = (cost-sal) - acc; }
+          else { var rate = C.fin.i/100/L, book = cost; for (var w=1; w<=jj; w++){ dep = book*rate; if (book-dep < sal) dep = Math.max(0, book-sal); book -= dep; } rem = book - sal; }
+          C.last = C.x; C.y = rem; C.x = dep; C.lift = true; return; }
+        case 'swap': finish(); C.fin = {n:0, i:0, PV:0, PMT:0, FV:0}; return;
+        case 'CLx': { var keep = {beg:C.beg, dmy:C.dmy, fix:C.fix}; C.reset(); C.beg = keep.beg; C.dmy = keep.dmy; C.fix = keep.fix; return; }
+        case 'sigma': finish(); for (var s=1; s<=6; s++) C.reg[s] = 0; C.x = C.y = C.z = C.t = 0; C.lift = false; return;
+      }
+      return;
+    }
+    if (pre==='g'){
+      switch (k){
+        case 'n': { finish(); var v12 = ok(C.x*12); C.last = C.x; C.x = v12; C.fin.n = v12; C.lift = true; C.lastFin = true; return; }
+        case 'i': { finish(); var d12 = C.x/12; C.last = C.x; C.x = d12; C.fin.i = d12; C.lift = true; C.lastFin = true; return; }
+        case 'PV': finish(); C.reg[0] = C.x; C.nj[0] = 1; C.fin.n = 0; C.lift = true; return;
+        case 'PMT': { finish(); var nn = Math.round(C.fin.n) + 1; if (nn > 19) throw E(6); C.reg[nn] = C.x; C.nj[nn] = 1; C.fin.n = nn; C.lift = true; return; }
+        case 'FV': { finish(); var cnt = Math.round(C.x); if (cnt < 1 || cnt > 99) throw E(6); C.nj[Math.round(C.fin.n)] = cnt; C.lift = true; return; }
+        case 'yx': unary(function(x){ if (x<0) throw E(0); return Math.sqrt(x); }); return;
+        case 'inv': unary(function(x){ return Math.exp(x); }); return;
+        case 'pctT': unary(function(x){ if (x<=0) throw E(0); return Math.log(x); }); return;
+        case 'dpct': unary(function(x){ return x - Math.trunc(x); }); return;
+        case 'pct': unary(function(x){ return Math.trunc(x); }); return;
+        case 'mul': unary(function(x){ return x*x; }); return;
+        case 'CHS': { finish(); var dt = parseDate(C.y), days = Math.round(C.x), res = encodeDate(dt.ms + days*864e5);
+          var wd = ['','seg','ter','qua','qui','sex','sáb','dom'][res.wd];
+          C.last = C.x; C.x = res.v; C.y = C.z; C.z = C.t; C.lift = true;
+          C.override = (C.dmy ? pad2(res.d)+'/'+pad2(res.m) : pad2(res.m)+'/'+pad2(res.d)) + '/' + res.y + '  ' + res.wd + ' (' + wd + ')';
+          return; }
+        case 'EEX': { finish(); var a = parseDate(C.y), b = parseDate(C.x);
+          var act = Math.round((b.ms - a.ms)/864e5);
+          var D1 = a.d===31 ? 30 : a.d, D2 = (b.d===31 && D1>=30) ? 30 : b.d;
+          var d360 = (b.y-a.y)*360 + (b.m-a.m)*30 + (D2-D1);
+          C.last = C.x; C.x = act; C.y = d360; C.lift = true; return; }
+        case '7': finish(); C.beg = true; return;
+        case '8': finish(); C.beg = false; return;
+        case '4': finish(); C.dmy = true; return;
+        case '5': finish(); C.dmy = false; return;
+        case '9': return;
+        case '0': { finish(); var s0 = stats(); if (!s0.n) throw E(2); push(); push(); C.y = s0.sy/s0.n; C.x = s0.sx/s0.n; C.lift = true; return; }
+        case 'dot': { finish(); var s1 = stats(); if (s1.n < 2) throw E(2);
+          var vx = (s1.n*s1.sx2 - s1.sx*s1.sx)/(s1.n*(s1.n-1)), vy = (s1.n*s1.sy2 - s1.sy*s1.sy)/(s1.n*(s1.n-1));
+          push(); push(); C.y = Math.sqrt(Math.max(0,vy)); C.x = Math.sqrt(Math.max(0,vx)); C.lift = true; return; }
+        case '6': { finish(); var s2 = stats(); if (!s2.sx) throw E(2); pushValue(s2.sxy/s2.sx); return; }
+        case '2': { finish(); var g2 = regr(), xin = C.x; C.last = xin; push(); C.x = g2.A + g2.B*xin; C.y = g2.r; C.lift = true; return; }
+        case '1': { finish(); var g1 = regr(); if (!g1.B) throw E(2); var yin = C.x; C.last = yin; push(); C.x = (yin - g1.A)/g1.B; C.y = g1.r; C.lift = true; return; }
+        case '3': unary(function(x){ if (x<0 || x>69 || x!==Math.round(x)) throw E(0); var f = 1; for (var q=2; q<=x; q++) f *= q; return f; }); return;
+        case 'sigma': { finish(); C.reg[1] -= 1; C.reg[2] -= C.x; C.reg[3] -= C.x*C.x; C.reg[4] -= C.y; C.reg[5] -= C.y*C.y; C.reg[6] -= C.x*C.y; C.last = C.x; C.x = C.reg[1]; C.lift = false; return; }
+        case 'ENTER': pushValue(C.last); return;
+      }
+      return;
+    }
+    if (DIG[k]){ digit(k); return; }
+    if (FIN[k]){
+      if (wasFin && !C.entry){ var res2 = solve(k); C.fin[k] = res2; pushValue(res2); }
+      else { finish(); C.fin[k] = C.x; C.lift = true; }
+      C.lastFin = true; return;
+    }
+    switch (k){
+      case 'dot': dot(); return;
+      case 'EEX': eex(); return;
+      case 'CHS': chs(); return;
+      case 'ENTER': finish(); push(); C.lift = false; return;
+      case 'CLx': C.entry = null; C.x = 0; C.lift = false; return;
+      case 'swap': { finish(); var tmp = C.x; C.x = C.y; C.y = tmp; C.lift = true; return; }
+      case 'rdn': { finish(); var x0 = C.x; C.x = C.y; C.y = C.z; C.z = C.t; C.t = x0; C.lift = true; return; }
+      case 'add': binary(function(y,x){ return y+x; }); return;
+      case 'sub': binary(function(y,x){ return y-x; }); return;
+      case 'mul': binary(function(y,x){ return y*x; }); return;
+      case 'div': binary(function(y,x){ if (x===0) throw E(0); return y/x; }); return;
+      case 'yx': binary(function(y,x){ var r = Math.pow(y,x); if (isNaN(r)) throw E(0); return r; }); return;
+      case 'inv': unary(function(x){ if (x===0) throw E(0); return 1/x; }); return;
+      case 'pct': keepY(function(y,x){ return y*x/100; }); return;
+      case 'dpct': keepY(function(y,x){ if (y===0) throw E(0); return (x-y)/y*100; }); return;
+      case 'pctT': keepY(function(y,x){ if (y===0) throw E(0); return x/y*100; }); return;
+      case 'STO': finish(); C.pend = {kind:'STO'}; return;
+      case 'RCL': finish(); C.pend = {kind:'RCL'}; return;
+      case 'sigma': { finish(); C.reg[1] += 1; C.reg[2] += C.x; C.reg[3] += C.x*C.x; C.reg[4] += C.y; C.reg[5] += C.y*C.y; C.reg[6] += C.x*C.y; C.last = C.x; C.x = C.reg[1]; C.lift = false; return; }
+    }
+  }
+  function pad2(n){ return (n<10?'0':'')+n; }
+
+  C.press = function(k){
+    C.override = null;
+    if (C.err!==null){ C.err = null; return; }
+    if (k==='f' || k==='g'){ C.prefix = k; return; }
+    var pre = C.prefix; C.prefix = null;
+    try {
+      if (C.pend){ C.lastFin = false; pending(k); return; }
+      var wasFin = C.lastFin; C.lastFin = false;
+      exec(k, pre, wasFin);
+    } catch (e){
+      if (e && e.calcCode!==undefined){ C.err = e.calcCode; C.entry = null; C.pend = null; }
+      else throw e;
+    }
+  };
+
+  /* ----- exibição ----- */
+  function group(intStr){ return intStr.replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
+  C.format = function(v){
+    if (!isFinite(v)) return 'Error 0';
+    var a = Math.abs(v), sign = v<0 ? '−' : '';
+    if (a === 0) return C.fix ? '0,' + '0'.repeat(C.fix) : '0';
+    var d = a < 1 ? 1 : Math.floor(Math.log10(a)) + 1;
+    var dec = Math.min(C.fix, 10 - d);
+    if (a >= 1e10 || dec < 0 || (a < 0.5*Math.pow(10, -C.fix))){
+      var e = Math.floor(Math.log10(a)), m = a/Math.pow(10, e);
+      if (m >= 9.9999995){ m = 1; e += 1; }
+      return sign + m.toFixed(6).replace('.', ',') + ' e' + (e<0?'−':'') + Math.abs(e);
+    }
+    var s = a.toFixed(dec), p = s.split('.');
+    if (p[0].length > 10) return sign + a.toExponential(6).replace('.', ',');
+    return sign + group(p[0]) + (dec>0 ? ',' + p[1] : '');
+  };
+  C.display = function(){
+    if (C.err!==null) return 'Error ' + C.err;
+    if (C.override) return C.override;
+    if (C.entry){
+      var e = C.entry, s = (e.neg?'−':'') + group(e.int || '0') + (e.frac!==null ? ',' + e.frac : '');
+      if (e.exp!==null) s += ' e' + (e.expNeg?'−':'') + (e.exp || '');
+      return s;
+    }
+    return C.format(C.x);
+  };
+}
+
+/* ---------- Calculadora: interface ---------- */
+var CALC = new CalcEngine();
+var calcOpen = false, calcView = {regs:true, stack:false}, calcHist = [], calcHistNum = false;
+var CALC_KEYS = [
+  {title:'Financeiro', keys:[
+    {id:'n', m:'n', f:'AMORT', g:'12×'}, {id:'i', m:'i', f:'INT', g:'12÷'}, {id:'PV', m:'PV', f:'NPV', g:'CF₀'},
+    {id:'PMT', m:'PMT', f:'RND', g:'CFⱼ'}, {id:'FV', m:'FV', f:'IRR', g:'Nⱼ'}]},
+  {title:'Funções e pilha', keys:[
+    {id:'yx', m:'yˣ', f:'PRICE', g:'√x'}, {id:'inv', m:'1/x', f:'YTM', g:'eˣ'}, {id:'pctT', m:'%T', f:'SL', g:'LN'},
+    {id:'dpct', m:'Δ%', f:'SOYD', g:'FRAC'}, {id:'pct', m:'%', f:'DB', g:'INTG'},
+    {id:'CHS', m:'CHS', g:'DATE'}, {id:'EEX', m:'EEX', g:'ΔDYS'}, {id:'swap', m:'x⇄y', f:'FIN'}, {id:'rdn', m:'R↓'}, {id:'CLx', m:'CLx', f:'REG'}]},
+  {title:'Teclado', keys:[
+    {id:'f', m:'f', cls:'key-f'}, {id:'7', m:'7', g:'BEG', num:1}, {id:'8', m:'8', g:'END', num:1}, {id:'9', m:'9', num:1}, {id:'div', m:'÷'},
+    {id:'g', m:'g', cls:'key-g'}, {id:'4', m:'4', g:'D.MY', num:1}, {id:'5', m:'5', g:'M.DY', num:1}, {id:'6', m:'6', g:'x̄w', num:1}, {id:'mul', m:'×', g:'x²'},
+    {id:'STO', m:'STO'}, {id:'1', m:'1', g:'x̂,r', num:1}, {id:'2', m:'2', g:'ŷ,r', num:1}, {id:'3', m:'3', g:'n!', num:1}, {id:'sub', m:'−'},
+    {id:'RCL', m:'RCL'}, {id:'0', m:'0', g:'x̄', num:1}, {id:'dot', m:',', g:'s', num:1}, {id:'sigma', m:'Σ+', f:'Σ', g:'Σ−'}, {id:'add', m:'+'}]}
+];
+var CALC_BY_ID = {ENTER:{id:'ENTER', m:'ENTER', g:'LSTx'}};
+CALC_KEYS.forEach(function(s){ s.keys.forEach(function(k){ CALC_BY_ID[k.id] = k; }); });
+
+function buildCalc(){
+  var box = $('#calc-keys'), html = '';
+  CALC_KEYS.forEach(function(sec){
+    html += '<div class="calc-sec"><h3>'+sec.title+'</h3><div class="calc-grid">';
+    sec.keys.forEach(function(k){
+      var cls = 'ck' + (k.cls ? ' '+k.cls : '') + (k.num ? ' num has-f' : '') + (k.f ? ' has-f' : '') + (k.g ? ' has-g' : '');
+      var aria = k.m + (k.f ? ', com f: '+k.f : '') + (k.g ? ', com g: '+k.g : '');
+      html += '<button type="button" class="'+cls+'" data-k="'+k.id+'" aria-label="'+esc(aria)+'">'+
+        '<span class="ck-main">'+k.m+'</span><span class="ck-sub">'+(k.f?'<b class="kf">'+k.f+'</b>':'')+(k.g?'<b class="kg">'+k.g+'</b>':'')+'</span></button>';
+    });
+    html += '</div></div>';
+  });
+  html += '<button type="button" class="ck-enter has-g" data-k="ENTER" aria-label="ENTER, com g: LSTx">ENTER <b class="kg">LSTx</b></button>';
+  box.innerHTML = html;
+  box.addEventListener('mousedown', function(e){ if (e.target.closest('[data-k]')) e.preventDefault(); });
+  box.addEventListener('click', function(e){
+    var b = e.target.closest('[data-k]'); if (!b) return;
+    calcPress(b.getAttribute('data-k'));
+  });
+}
+function calcRecord(id){
+  var k = CALC_BY_ID[id];
+  var isNum = !CALC.prefix && !CALC.pend && CALC.err===null && (/^[0-9]$/.test(id) || id==='dot' || (id==='EEX' && !!CALC.entry));
+  if (isNum){
+    var ch = id==='dot' ? ',' : id==='EEX' ? ' e' : id;
+    if (calcHistNum && calcHist.length) calcHist[calcHist.length-1] += ch;
+    else calcHist.push(ch);
+    calcHistNum = true;
+  } else {
+    calcHistNum = false;
+    if (id==='f' || id==='g'){ calcHist.push(id); }
+    else {
+      var pre = CALC.prefix, label = k ? k.m : id;
+      if (pre && k) label = (k[pre] || (pre==='f' && k.num ? 'FIX '+k.m : k.m));
+      if (pre && calcHist.length && calcHist[calcHist.length-1]===pre) calcHist[calcHist.length-1] = pre+' '+label;
+      else calcHist.push(label);
+    }
+  }
+  if (calcHist.length > 24) calcHist.splice(0, calcHist.length-24);
+}
+function calcPress(id){
+  calcRecord(id);
+  CALC.press(id);
+  renderCalc();
+}
+function calcBackspace(){
+  if (calcHistNum && calcHist.length){
+    var t = calcHist[calcHist.length-1].slice(0,-1);
+    if (t) calcHist[calcHist.length-1] = t; else { calcHist.pop(); calcHistNum = false; }
+  }
+  CALC.backspace();
+  renderCalc();
+}
+function renderCalc(){
+  if (!calcOpen) return;
+  var root = $('#calc');
+  root.classList.toggle('pre-f', CALC.prefix==='f');
+  root.classList.toggle('pre-g', CALC.prefix==='g');
+  var d = $('#calc-disp');
+  d.textContent = CALC.display();
+  d.classList.toggle('err', CALC.err!==null);
+  var ind = '';
+  if (CALC.prefix) ind += '<span class="on-'+CALC.prefix+'">'+CALC.prefix+'</span>';
+  if (CALC.pend) ind += '<span class="on-pend">'+CALC.pend.kind+(CALC.pend.op?' '+({add:'+',sub:'−',mul:'×',div:'÷'})[CALC.pend.op]:'')+(CALC.pend.dot?' ,':'')+'</span>';
+  ind += '<span>'+(CALC.beg ? 'BEG' : 'END')+'</span><span>'+(CALC.dmy ? 'D.MY' : 'M.DY')+'</span><i></i><em>'+CALC.fix+(CALC.fix===1?' casa':' casas')+'</em>';
+  $('#calc-ind').innerHTML = ind;
+  var regs = $('#calc-regs');
+  regs.hidden = !calcView.regs;
+  if (calcView.regs){
+    regs.innerHTML = ['n','i','PV','PMT','FV'].map(function(k){
+      return '<div class="calc-reg"><span>'+k+'</span><span>'+esc(CALC.format(CALC.fin[k]))+'</span></div>';
+    }).join('');
+  }
+  var st = $('#calc-stack');
+  st.hidden = !calcView.stack;
+  if (calcView.stack){
+    st.innerHTML = [['T',CALC.t],['Z',CALC.z],['Y',CALC.y],['X',CALC.x]].map(function(p){
+      return '<div class="calc-reg"><span>'+p[0]+'</span><span>'+esc(CALC.format(p[1]))+'</span></div>';
+    }).join('');
+  }
+  $('#calc-hist-list').innerHTML = calcHist.length ? calcHist.map(function(t){ return '<span class="tok">'+esc(t)+'</span>'; }).join('') : '<span class="calc-hist-empty">As teclas que você apertar aparecem aqui.</span>';
+  $('#calc-btn-regs').setAttribute('aria-pressed', calcView.regs ? 'true' : 'false');
+  $('#calc-btn-stack').setAttribute('aria-pressed', calcView.stack ? 'true' : 'false');
+}
+function openCalc(){
+  calcOpen = true;
+  $('#calc').hidden = false;
+  document.body.classList.add('calc-open');
+  $('#btn-calc').setAttribute('aria-pressed', 'true');
+  renderCalc();
+  try { $('#calc').focus({preventScroll:true}); } catch(e){}
+}
+function closeCalc(){
+  if (!calcOpen) return;
+  calcOpen = false;
+  $('#calc').hidden = true;
+  document.body.classList.remove('calc-open');
+  $('#btn-calc').setAttribute('aria-pressed', 'false');
+}
+function calcKeyFor(e){
+  var k = e.key;
+  if (/^[0-9]$/.test(k)) return k;
+  if (k===',' || k==='.') return 'dot';
+  if (k==='+') return 'add';
+  if (k==='-') return 'sub';
+  if (k==='*') return 'mul';
+  if (k==='/') return 'div';
+  if (k==='Enter') return 'ENTER';
+  if (k==='Backspace') return 'bs';
+  if (k==='Delete') return 'CLx';
+  if (k==='Escape') return 'close';
+  if (k==='f' || k==='F') return 'f';
+  if (k==='g' || k==='G') return 'g';
+  return null;
+}
+
 /* ---------- Servidor externo (Google Apps Script) ---------- */
 /* Cole aqui a URL da implantação do Apps Script (termina em /exec). */
-var SERVER_URL = 'https://script.google.com/macros/s/AKfycbzAfmHJCI53_PWjNmxQuBTwlzjUi2d_ebY3-KQcVZnLnPF2R_YCFjymJz9McMRRyf4v/exec';
+var SERVER_URL = 'https://script.google.com/macros/s/AKfycbzN7Zpr9eRE-Imw-gr2vKXFjt-9te5MqRhM4b3kKS_Z3iiW0xQVKX5cK_dsgAwxECBxpw/exec';
 
 var PAINEL_KEY = (function(){ try { return new URLSearchParams(location.search).get('painel') || ''; } catch(e){ return ''; } })();
 var LS_PREFIX = 'simulado_ancord:';
@@ -1949,6 +2547,7 @@ $('#who-line').addEventListener('click', function(e){ if (e.target && e.target.i
 
 /* ---------- Inicialização ---------- */
 function boot(){
+  buildCalc();
   buildStartTable();
   buildModulePicker();
   if (SERVER_URL.indexOf('https://')!==0){
